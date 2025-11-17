@@ -1,4 +1,4 @@
-package spendo.io;
+package com.spendo.io;
 
 public class archivos {
 }
