@@ -1,4 +1,4 @@
 package com.spendo.cuentas;
 
-public class Transaccion {
+public class Movimiento {
 }
