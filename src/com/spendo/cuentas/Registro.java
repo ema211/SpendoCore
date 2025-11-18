@@ -11,6 +11,12 @@ public abstract class Registro {
     private Categoria categoria;
     private String descripcion;
 
+    /**
+     * Constructor
+     * @param monto : cantidad a aumentar/restar
+     * @param fecha : fecha del registro
+     * @param categoria : categoria asociada
+     */
     public Registro(double monto, LocalDateTime fecha, Categoria categoria) {
         if (monto <= 0) {
             System.out.println("¡Error! El monto debe ser mayor que 0.");
@@ -23,10 +29,16 @@ public abstract class Registro {
         this.categoria = categoria;
     }
 
+    /**
+     * Constructor con fecha actual de registro
+     * @param monto : cantidad a aumentar/restar
+     * @param categoria : categoria asociada
+     */
     public Registro(double monto, Categoria categoria) {
         this(monto, LocalDateTime.now(), categoria);
     }
 
+    //getters
     public double getMonto() {
         return this.monto;
     }
@@ -39,6 +51,11 @@ public abstract class Registro {
         return this.categoria;
     }
 
+    /**
+     * Metodo abstracto
+     * Este metodo debe de implementarse en los metodos hijos de registro
+     * @return true si la operacion fue exitosa
+     */
     public abstract boolean aplicar();
 
 }
