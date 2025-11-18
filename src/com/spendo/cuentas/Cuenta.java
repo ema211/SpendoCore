@@ -1,8 +1,6 @@
 package com.spendo.cuentas;
-import java.time.LocalDateTime; //esto es en el caso que queramos registrar la fecha en
-                                // la que se hicieron los cambios en la cuenta bancaria
+import java.time.LocalDateTime;
 
-<<<<<<< HEAD
 public class Cuenta {
     private String idCuenta; //es el identificador de la cuenta
     private String nombreCuenta;
