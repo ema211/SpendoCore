@@ -1,6 +1,5 @@
-package com.spendo.usuarios;
+package com.spendo.core;
 
-import com.spendo.cuentas.Cuenta;
 import java.util.ArrayList;
 import java.util.List;
 

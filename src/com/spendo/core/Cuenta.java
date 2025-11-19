@@ -1,4 +1,4 @@
-package com.spendo.cuentas;
+package com.spendo.core;
 
 import java.util.List;
 import java.util.ArrayList;

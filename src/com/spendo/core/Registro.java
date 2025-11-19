@@ -1,4 +1,4 @@
-package com.spendo.cuentas;
+package com.spendo.core;
 
 import com.spendo.enums.Categoria;
 
