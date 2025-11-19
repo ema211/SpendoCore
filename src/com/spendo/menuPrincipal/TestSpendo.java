@@ -1,4 +1,4 @@
-package com.spendo;
+package com.spendo.menuPrincipal;
 
 import com.spendo.interfaz.VentanaLogin;
 
