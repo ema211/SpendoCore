@@ -5,6 +5,7 @@ import com.spendo.enums.Categoria;
 import com.spendo.interfaz.VentanaLogin;
 
 import static com.spendo.enums.Categoria.ALIMENTACION;
+import static com.spendo.enums.Categoria.TRANSFERENCIA;
 
 public class TestSpendo {
     public static void main(String[] args) {
@@ -43,6 +44,40 @@ public class TestSpendo {
 
         //Verdad: Imprime el saldo final de la cuenta. (Debería ser 800.0).
         System.out.println(cuenta1.getBalance());
+
+        System.out.println("-----SEPARADOR-----");
+
+        Cuenta cuenta2 = new Cuenta("Ahorros");
+        usuarioEncontrado.addCuenta(cuenta2);
+        Transferencia t1 = new Transferencia(5000, TRANSFERENCIA, cuenta1,cuenta2);
+
+        if (t1.aplicar()) {
+            System.out.println("Transferencia aplicado correctamente.");
+        }
+        else {
+            System.out.println("¡Intento de fraude detectado!");
+        }
+
+        Transferencia t2 = new Transferencia(300, TRANSFERENCIA, cuenta1,cuenta2);
+        if (t2.aplicar()) {
+            System.out.println("Transferencia aplicado correctamente.");
+        }
+        else {
+            System.out.println("¡Intento de fraude detectado!");
+        }
+
+        System.out.println(cuenta2.getBalance());
+        System.out.println(cuenta1.getBalance());
+
+        System.out.println("-----SEPARADOR-----");
+
+        for (Cuenta cuenta : usuarioEncontrado.getCuentas()) {
+            System.out.println("Nombre de cuenta: " + cuenta.getNombre());
+            for (Registro registro : cuenta.getRegistros()) {
+                System.out.println(registro.getCategoria()+ "- $"+ registro.getMonto());
+            }
+
+        }
 
     }
 }
