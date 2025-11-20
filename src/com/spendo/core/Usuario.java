@@ -32,7 +32,7 @@ public class Usuario {
     }
 
     /**
-     *
+     * Valida si la contraseña es la correcta
      * @param passwordIngresada: contraseña proporcionada al intentar iniciar sesion
      * @return true si la contraseña ingresada coincide, de lo contrario da false
      */
