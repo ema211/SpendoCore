@@ -19,11 +19,11 @@ public class TestArchivoUsuarios {
         String password = sc.nextLine().trim();
 
         // Verificar si existe
-        if (archivoUsuarios.encontrarUsuario(nombre)) {
+        if (archivoUsuarios.encontrarUsuarioArchivo(nombre)) {
             System.out.println("El usuario '" + nombre + "' ya existe.");
         } else {
             System.out.println("Usuario no existe, registrando...");
-            archivoUsuarios.registrarUsuario(nombre, password);
+            archivoUsuarios.registrarUsuarioArchivo(nombre, password);
         }
 
         sc.close();

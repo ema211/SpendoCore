@@ -14,7 +14,7 @@ public class ArchivoUsuarios {
 
     private final String RUTAUSUARIO = "database/usuarios.csv";
 
-    public boolean encontrarUsuario(String nombre) {
+    public boolean encontrarUsuarioArchivo(String nombre) {
 
         try (BufferedReader br = new BufferedReader(new FileReader(RUTAUSUARIO))) {
 
@@ -36,7 +36,7 @@ public class ArchivoUsuarios {
     }
 
 
-    public void registrarUsuario(String nombre, String password) {
+    public void registrarUsuarioArchivo(String nombre, String password) {
 
         try {
             // Agregamos el nombre y contraseña a usuarios.csv
