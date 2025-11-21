@@ -43,4 +43,8 @@ public class Gasto extends Registro {
         return true;
     }
 
+    public Cuenta getCuenta() {
+        return cuenta;
+    }
+
 }

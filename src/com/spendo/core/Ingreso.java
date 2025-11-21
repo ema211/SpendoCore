@@ -40,4 +40,9 @@ public class Ingreso extends Registro {
          this.cuenta.addRegistro(this);
         return true;
     }
+
+    public Cuenta getCuenta() {
+        return cuenta;
+    }
+
 }

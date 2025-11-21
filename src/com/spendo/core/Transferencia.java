@@ -54,4 +54,13 @@ public class Transferencia extends  Registro {
 
         return true;
     }
+
+    public Cuenta getCuentaOrigen() {
+        return cuentaOrigen;
+    }
+
+    public Cuenta getCuentaDestino() {
+        return cuentaDestino;
+    }
+
 }
