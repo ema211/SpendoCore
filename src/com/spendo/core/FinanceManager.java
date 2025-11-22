@@ -1,10 +1,13 @@
 package com.spendo.core;
 
+import com.spendo.sistemaArchivos.AdminArchivos;
+
 import java.util.ArrayList;
 
 public class FinanceManager {
     private static FinanceManager instancia;
     private ArrayList<Usuario> almacenamiento;
+    private AdminArchivos adminArchivos;
 
     /**
      * Constructor privado (Singleton)
@@ -54,5 +57,6 @@ public class FinanceManager {
         }
         return null;
     }
+
 
 }

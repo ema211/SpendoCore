@@ -56,11 +56,11 @@ public class Transferencia extends  Registro {
     }
 
     public Cuenta getCuentaOrigen() {
-        return cuentaOrigen;
+        return this.cuentaOrigen;
     }
 
     public Cuenta getCuentaDestino() {
-        return cuentaDestino;
+        return this.cuentaDestino;
     }
 
 }
