@@ -51,4 +51,19 @@ public class Usuario {
     public List<Cuenta> getCuentas() {
         return cuentas;
     }
+
+    /**
+     * Busca una cuenta del usuario por nombre
+     * @param nombreCuenta nombre de la cuenta
+     * @return la cuenta encontrada o null si no existe
+     */
+    public Cuenta buscarCuenta(String nombreCuenta) {
+        for (Cuenta c : cuentas) {
+            if (c.getNombre().equalsIgnoreCase(nombreCuenta.trim())) {
+                return c;
+            }
+        }
+        return null;
+    }
+
 }
