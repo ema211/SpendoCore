@@ -21,7 +21,7 @@ public class AdminArchivos {
             // Variables
             String tipo = "";
             String monto = String.valueOf(registro.getMonto());
-            String categoria = registro.getCategoria().toString();
+            String categoria = registro.getCategoria().getNombreBonito();
             String fecha = registro.getFecha().toString();
             String cuentaOrigen = "N/A";
             String cuentaDestino = "N/A";

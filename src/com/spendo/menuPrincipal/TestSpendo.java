@@ -33,7 +33,7 @@ public class TestSpendo {
         usuarioEncontrado.addCuenta(cuenta1);
 
         //Acción: Crea un Gasto de 200 pesos asociado a esa cuenta y ejecútalo (.aplicar()).
-        Gasto gasto = new Gasto(200, ALIMENTACION, cuenta1);
+        Gasto gasto = new Gasto(200, Categoria.ALIMENTACION, cuenta1);
 
         boolean exito = gasto.aplicar();
         if(exito) {
@@ -49,7 +49,7 @@ public class TestSpendo {
 
         Cuenta cuenta2 = new Cuenta("Ahorros");
         usuarioEncontrado.addCuenta(cuenta2);
-        Transferencia t1 = new Transferencia(5000, TRANSFERENCIA, cuenta1,cuenta2);
+        Transferencia t1 = new Transferencia(5000, Categoria.TRANSFERENCIA, cuenta1,cuenta2);
 
         if (t1.aplicar()) {
             System.out.println("Transferencia aplicado correctamente.");
@@ -76,8 +76,6 @@ public class TestSpendo {
             for (Registro registro : cuenta.getRegistros()) {
                 System.out.println(registro.getCategoria()+ "- $"+ registro.getMonto());
             }
-
         }
-
     }
 }
