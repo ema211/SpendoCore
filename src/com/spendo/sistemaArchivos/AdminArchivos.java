@@ -1,6 +1,7 @@
 package com.spendo.sistemaArchivos;
 
 import com.spendo.core.*;
+import com.spendo.enums.Categoria;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -13,53 +14,49 @@ public class AdminArchivos {
 
     private final String RUTAPersonal = "database/carpetaUsuarios/";
 
-    public void guardarRegistroFile(Usuario usuario, Registro registro){
+    /**
+     * Guarda un registro en registros.csv
+     */
+    public void guardarRegistroFile(Usuario usuario, Registro registro) {
         String rutaRegistros = RUTAPersonal + usuario.getUsername() + "/registros.csv";
 
         try (FileWriter fw = new FileWriter(rutaRegistros, true)) {
 
-            // Variables
             String tipo = "";
             String monto = String.valueOf(registro.getMonto());
-            String categoria = registro.getCategoria().getNombreBonito();
+            String categoria = registro.getCategoria().name(); //categorias
             String fecha = registro.getFecha().toString();
             String cuentaOrigen = "N/A";
             String cuentaDestino = "N/A";
 
-            if (registro instanceof Transferencia) {
+            if (registro instanceof Transferencia t) {
                 tipo = "Transferencia";
-                Transferencia t = (Transferencia) registro;
                 cuentaOrigen = t.getCuentaOrigen().getNombre();
                 cuentaDestino = t.getCuentaDestino().getNombre();
 
-            } else if (registro instanceof Gasto) {
+            } else if (registro instanceof Gasto g) {
                 tipo = "Gasto";
-                Gasto g = (Gasto) registro;
                 cuentaOrigen = g.getCuenta().getNombre();
 
-            } else if (registro instanceof Ingreso) {
+            } else if (registro instanceof Ingreso i) {
                 tipo = "Ingreso";
-                Ingreso i = (Ingreso) registro;
-                // Origen se queda en "N/A"
                 cuentaDestino = i.getCuenta().getNombre();
-
-            } else {
-                System.out.println("Error: Tipo de registro no identificado");
             }
 
-            //Ya obtubimos las variables asi que las escribimos
-            fw.write(tipo + "," + monto + "," + categoria + "," + fecha + "," + cuentaOrigen + "," + cuentaDestino + "\n");
+            fw.write(tipo + "," + monto + "," + categoria + "," + fecha + ","
+                    + cuentaOrigen + "," + cuentaDestino + "\n");
 
-        }catch (Exception e){
+        } catch (Exception e) {
             System.out.println("Error. No se pudo guardar el registro");
         }
     }
 
-
-    private void actualizarCuentasFile(Usuario usuario){
+    /**
+     * Sobrescribe el archivo cuentas.csv con las cuentas actuales
+     */
+    private void actualizarCuentasFile(Usuario usuario) {
         String rutaCuentas = RUTAPersonal + usuario.getUsername() + "/cuentas.csv";
 
-        //va a sobrescribir todo
         try (FileWriter fw = new FileWriter(rutaCuentas, false)) {
 
             for (Cuenta cuenta : usuario.getCuentas()) {
@@ -71,24 +68,24 @@ public class AdminArchivos {
         }
     }
 
-
+    /**
+     * Carga todas las cuentas de un usuario desde cuentas.csv
+     */
     public List<Cuenta> cargarCuentas(String username) {
         List<Cuenta> cuentasCargadas = new ArrayList<>();
         String rutaCuentas = RUTAPersonal + username + "/cuentas.csv";
 
         try (BufferedReader br = new BufferedReader(new FileReader(rutaCuentas))) {
 
-            // saltamos la primera linea
-            br.readLine();
+            br.readLine(); // Saltar encabezado
+
             String linea;
-            // Empezamos a leer desde la segunda línea que ya contiene datos.
             while ((linea = br.readLine()) != null) {
 
                 String[] datos = linea.split(",");
 
-                if (datos.length >= 2) { //verificacion que si tenga dos datos el archivo
+                if (datos.length >= 2) {
                     String nombreCuenta = datos[0];
-
                     double balance = Double.parseDouble(datos[1]);
 
                     Cuenta cuenta = new Cuenta(nombreCuenta, balance);
@@ -103,9 +100,61 @@ public class AdminArchivos {
         return cuentasCargadas;
     }
 
+    /**
+     * Cargar registros desde registros.csv y reconstruir objetos
+     */
+    public void cargarRegistros(String username, Usuario usuario) {
+        String ruta = RUTAPersonal + username + "/registros.csv";
 
+        try (BufferedReader br = new BufferedReader(new FileReader(ruta))) {
+
+            br.readLine(); // saltar encabezado
+
+            String linea;
+            while ((linea = br.readLine()) != null) {
+
+                String[] datos = linea.split(",");
+                if (datos.length < 6) continue;
+
+                String tipo = datos[0];
+                double monto = Double.parseDouble(datos[1]);
+                Categoria categoria = Categoria.valueOf(datos[2]);
+                String fechaStr = datos[3];
+                String origen = datos[4];
+                String destino = datos[5];
+
+                // buscar cuentas existentes
+                Cuenta cuentaOrigen = buscarCuenta(origen, usuario);
+                Cuenta cuentaDestino = buscarCuenta(destino, usuario);
+
+                Registro reg = null;
+
+                switch (tipo) {
+                    case "Gasto" -> reg = new Gasto(monto, categoria, cuentaOrigen);
+
+                    case "Ingreso" -> reg = new Ingreso(monto, categoria, cuentaDestino);
+
+                    case "Transferencia" ->
+                            reg = new Transferencia(monto, categoria, cuentaOrigen, cuentaDestino);
+                }
+
+                if (reg != null) {
+                    reg.aplicar();
+                }
+            }
+
+        } catch (IOException e) {
+            System.out.println("ERROR: No se pudieron cargar registros del archivo.");
+        }
+    }
+
+    /**
+     * Buscar una cuenta por nombre dentro del usuario
+     */
+    private Cuenta buscarCuenta(String nombre, Usuario usuario) {
+        for (Cuenta c : usuario.getCuentas()) {
+            if (c.getNombre().equals(nombre)) return c;
+        }
+        return null;
+    }
 }
-/*
- * guarda y lee las cuentas en un archivo
- * guarda y lee transacciones
- */

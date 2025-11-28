@@ -1,29 +1,21 @@
 package com.spendo.sistemaArchivos;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
 import java.io.*;
 import java.nio.file.*;
 
 public class ArchivoUsuarios {
 
-    // Se encarga de manejar el archivo usuarios
-    // Verifica la información del login:
-    // Si el usuario no existe se encargara de registrarlo en el archivo de usuarios y crear su carpeta personal con su cuentas.csv y registros.csv
-
     private final String RUTAUSUARIO = "database/usuarios.csv";
 
-    public boolean encontrarUsuarioFile(String nombre) {
-
+    /**
+     * Verifica si un usuario existe por nombre
+     */
+    public boolean usuarioExiste(String nombre) {
         try (BufferedReader br = new BufferedReader(new FileReader(RUTAUSUARIO))) {
-
             String linea;
 
             while ((linea = br.readLine()) != null) {
-
                 String[] datos = linea.split(",");
-
                 if (datos[0].equals(nombre)) {
                     return true;
                 }
@@ -35,44 +27,69 @@ public class ArchivoUsuarios {
         return false;
     }
 
+    /**
+     * Obtiene la contraseña guardada del usuario
+     */
+    public String obtenerPasswordDeUsuario(String nombre) {
 
+        try (BufferedReader br = new BufferedReader(new FileReader(RUTAUSUARIO))) {
+            String linea;
+
+            while ((linea = br.readLine()) != null) {
+                String[] datos = linea.split(",");
+
+                if (datos[0].equals(nombre)) {
+                    return datos[1];  // contraseña guardada
+                }
+            }
+
+        } catch (IOException e) {
+            System.out.println("ERROR: No se pudo leer usuarios.csv");
+        }
+
+        return null;
+    }
+
+    /**
+     * Valida las credenciales
+     * @return true si el username existe y la contraseña coincide
+     */
+    public boolean validarCredenciales(String nombre, String passwordIngresada) {
+        String passCorrecta = obtenerPasswordDeUsuario(nombre);
+
+        if (passCorrecta == null) return false; // usuario no existe
+
+        return passCorrecta.equals(passwordIngresada);
+    }
+
+    /**
+     * Registrar usuario nuevo
+     */
     public void registrarUsuarioFile(String nombre, String password) {
-
         try {
-            // Agregamos el nombre y contraseña a usuarios.csv
+            // Registrar en usuarios.csv
             FileWriter usuarioWriter = new FileWriter(RUTAUSUARIO, true);
             usuarioWriter.write(nombre + "," + password + "\n");
             usuarioWriter.close();
 
-            // Guarda la carpeta del usuario en carpetaUsuarios. Si esta carpeta general no existe la crea
+            // Crear carpeta del usuario
             String rutaCarpeta = "database/carpetaUsuarios/" + nombre;
             Files.createDirectories(Paths.get(rutaCarpeta));
 
-            // Crea cuentas.csv
-            File cuentas = new File(rutaCarpeta + "/cuentas.csv");
-            cuentas.createNewFile();
-
-            //Formato
+            // Crear cuentas.csv
             FileWriter fwCuentas = new FileWriter(rutaCarpeta + "/cuentas.csv");
             fwCuentas.write("NOMBRE,BALANCE\n");
             fwCuentas.close();
 
             // Crear registros.csv
-            File registros = new File(rutaCarpeta + "/registros.csv");
-            registros.createNewFile();
-
-            //Formato
             FileWriter fwRegistros = new FileWriter(rutaCarpeta + "/registros.csv");
             fwRegistros.write("TIPO,MONTO,CATEGORIA,FECHA,CUENTAORIGEN,CUENTADESTINO\n");
             fwRegistros.close();
 
-            System.out.println("Se registro tu usuario exitosamente");
+            System.out.println("Usuario registrado exitosamente.");
 
         } catch (IOException e) {
-            System.out.println("ERROR: No se pudo crear archivos.csv para este usuario");
+            System.out.println("ERROR: No se pudo crear archivos del usuario.");
         }
     }
-
 }
-
-

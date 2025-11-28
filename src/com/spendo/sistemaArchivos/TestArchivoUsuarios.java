@@ -4,29 +4,38 @@ import java.util.Scanner;
 
 public class TestArchivoUsuarios {
 
-    //SOLO DE PRUEBA - para que se formen bien los archivos en la database y poder checarlos!
-    //OJO: Si lo corres, se agregaran los archivos para el nombre que registraste pero no se agregan automaticamente al git
-
     public static void main(String[] args) {
 
         ArchivoUsuarios archivoUsuarios = new ArchivoUsuarios();
         Scanner sc = new Scanner(System.in);
 
-        System.out.print("Ingresa nombre de usuario para probar: ");
+        System.out.print("Ingresa nombre de usuario: ");
         String nombre = sc.nextLine().trim();
 
-        System.out.print("Ingresa contraseña: ");
-        String password = sc.nextLine().trim();
+        // Si el usuario NO existe → registrarlo
+        if (!archivoUsuarios.usuarioExiste(nombre)) {
 
-        // Verificar si existe
-        if (archivoUsuarios.encontrarUsuarioFile(nombre)) {
-            System.out.println("El usuario '" + nombre + "' ya existe.");
-        } else {
-            System.out.println("Usuario no existe, registrando...");
+            System.out.println("Usuario no existe. Registrándolo...");
+
+            System.out.print("Crea una contraseña: ");
+            String password = sc.nextLine().trim();
+
             archivoUsuarios.registrarUsuarioFile(nombre, password);
+            System.out.println("¡Registro completado!");
+
+        } else {
+            // Usuario existe → validar contraseña
+
+            System.out.print("Ingresa tu contraseña: ");
+            String passwordIngresada = sc.nextLine().trim();
+
+            if (archivoUsuarios.validarCredenciales(nombre, passwordIngresada)) {
+                System.out.println("¡Login exitoso!");
+            } else {
+                System.out.println("Contraseña incorrecta. Acceso denegado.");
+            }
         }
 
         sc.close();
     }
-
 }
