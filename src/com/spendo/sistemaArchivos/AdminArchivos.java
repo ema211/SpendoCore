@@ -47,13 +47,15 @@ public class AdminArchivos {
         } catch (Exception e) {
             System.out.println("Error. No se pudo guardar el registro");
         }
+        actualizarCuentasFile(usuario);
     }
 
     // Actualiza cuentas.csv (sobrescribe)
-    private void actualizarCuentasFile(Usuario usuario) {
+    public void actualizarCuentasFile(Usuario usuario) {
         String rutaCuentas = RUTAPersonal + usuario.getUsername() + "/cuentas.csv";
 
         try (FileWriter fw = new FileWriter(rutaCuentas, false)) {
+            fw.write("NOMBRE;BALANCE\n");
             for (Cuenta cuenta : usuario.getCuentas()) {
                 fw.write(cuenta.getNombre() + "," + cuenta.getBalance() + "\n");
             }

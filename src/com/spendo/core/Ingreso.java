@@ -41,6 +41,12 @@ public class Ingreso extends Registro {
         return true;
     }
 
+    @Override
+    public void revertir() {
+        this.cuenta.retirar(this.getMonto());
+        this.cuenta.getRegistros().remove(this);
+    }
+
     public Cuenta getCuenta() {
         return cuenta;
     }

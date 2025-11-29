@@ -55,6 +55,15 @@ public class Transferencia extends  Registro {
         return true;
     }
 
+    @Override
+    public void revertir() {
+        this.cuentaOrigen.depositar(this.getMonto());
+        this.cuentaDestino.retirar(this.getMonto());
+
+        this.cuentaOrigen.getRegistros().remove(this);
+        this.cuentaDestino.getRegistros().remove(this);
+    }
+
     public Cuenta getCuentaOrigen() {
         return this.cuentaOrigen;
     }

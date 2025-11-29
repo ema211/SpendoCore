@@ -31,4 +31,5 @@ public abstract class Registro {
     }
 
     public abstract boolean aplicar();
+    public abstract void revertir();
 }

@@ -43,6 +43,12 @@ public class Gasto extends Registro {
         return true;
     }
 
+    @Override
+    public void revertir() {
+        this.cuenta.depositar(this.getMonto());
+        this.cuenta.getRegistros().remove(this);
+    }
+
     public Cuenta getCuenta() {
         return cuenta;
     }

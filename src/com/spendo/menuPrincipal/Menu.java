@@ -65,6 +65,7 @@ public class Menu {
 
         Cuenta nueva = new Cuenta(nombre, balance);
         usuario.addCuenta(nueva);
+        admin.actualizarCuentasFile(usuario);
 
         System.out.println("Cuenta creada correctamente.");
     }
@@ -83,7 +84,9 @@ public class Menu {
         Registro g = new Gasto(monto, LocalDateTime.now(), categoria, cuenta);
 
         if (g.aplicar()) {
-            cuenta.addRegistro(g);
+            //DUPLICADO EN CLASE GASTO
+            //cuenta.addRegistro(g);
+            admin.guardarRegistroFile(usuario, g);
             System.out.println("Gasto registrado.");
         } else {
             System.out.println("Saldo insuficiente.");
@@ -104,8 +107,9 @@ public class Menu {
         Registro i = new Ingreso(monto, LocalDateTime.now(), categoria, cuenta);
 
         i.aplicar();
-        cuenta.addRegistro(i);
-
+        //DUPLICADO EN CLASE INGRESO
+        //cuenta.addRegistro(i);
+        admin.guardarRegistroFile(usuario, i);
         System.out.println("Ingreso registrado.");
     }
 
@@ -123,11 +127,14 @@ public class Menu {
         System.out.print("Monto: ");
         double monto = Double.parseDouble(sc.nextLine());
 
-        Registro t = new Transferencia(monto, LocalDateTime.now(), Categoria.TRANSFERENCIA, origen, destino);
+        Registro t = new Transferencia(monto, LocalDateTime.now(),
+                                        Categoria.TRANSFERENCIA, origen, destino);
 
         if (t.aplicar()) {
-            origen.addRegistro(t);
-            destino.addRegistro(t);
+            //DUPLICADO EN CLASE TRANSFERENCIA
+            //origen.addRegistro(t);
+            //destino.addRegistro(t);
+            admin.guardarRegistroFile(usuario, t);
             System.out.println("Transferencia realizada.");
         } else {
             System.out.println("Fondos insuficientes.");
