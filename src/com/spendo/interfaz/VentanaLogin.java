@@ -1,4 +1,4 @@
-package com.spendo.ui;
+package com.spendo.interfaz;
 
 import com.spendo.core.FinanceManager;
 import com.spendo.core.Usuario;

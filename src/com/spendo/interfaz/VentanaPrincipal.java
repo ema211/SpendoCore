@@ -1,4 +1,4 @@
-package com.spendo.ui;
+package com.spendo.interfaz;
 
 import com.spendo.core.*;
 import com.spendo.enums.Categoria;
@@ -8,6 +8,7 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.time.LocalDateTime;
+import java.util.Comparator; // <--- Importante para ordenar
 import java.util.List;
 
 public class VentanaPrincipal extends JFrame {
@@ -15,7 +16,7 @@ public class VentanaPrincipal extends JFrame {
     private Usuario usuario;
     private AdminArchivos admin;
 
-    // Modelos para las tablas (nos permiten borrar/agregar filas facil)
+    // Modelos para las tablas
     private DefaultTableModel modeloCuentas;
     private DefaultTableModel modeloMovimientos;
 
@@ -26,21 +27,21 @@ public class VentanaPrincipal extends JFrame {
         this.admin = new AdminArchivos();
 
         setTitle("Spendo - Dashboard de " + usuario.getUsername());
-        setSize(900, 600);
+        setSize(950, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
+        setLocationRelativeTo(null); // Centrar
 
         initUI();
         cargarDatos();
     }
 
     private void initUI() {
-        // Layout Principal: BorderLayout
+        // Layout Principal
         setLayout(new BorderLayout());
 
         // --- 1. PANEL SUPERIOR (Botones) ---
         JPanel topPanel = new JPanel();
-        topPanel.setBackground(new Color(60, 63, 65));
+        topPanel.setBackground(new Color(60, 63, 65)); // Gris oscuro
         topPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 20, 10));
 
         JButton btnGasto = crearBoton("💸 Gasto", new Color(220, 53, 69)); // Rojo
@@ -48,7 +49,7 @@ public class VentanaPrincipal extends JFrame {
         JButton btnTransfer = crearBoton("🔄 Transferir", new Color(255, 193, 7)); // Amarillo
         JButton btnNuevaCuenta = crearBoton("🏦 Nueva Cuenta", new Color(23, 162, 184)); // Cyan
 
-        // Acciones
+        // Acciones de botones
         btnGasto.addActionListener(e -> registrarOperacion("GASTO"));
         btnIngreso.addActionListener(e -> registrarOperacion("INGRESO"));
         btnTransfer.addActionListener(e -> registrarOperacion("TRANSFERENCIA"));
@@ -59,24 +60,28 @@ public class VentanaPrincipal extends JFrame {
         topPanel.add(btnTransfer);
         topPanel.add(btnNuevaCuenta);
 
-        // Saldo Total Label
+        // Label de Saldo Total
         labelSaldoTotal = new JLabel("Total: $0.00");
         labelSaldoTotal.setForeground(Color.WHITE);
         labelSaldoTotal.setFont(new Font("Arial", Font.BOLD, 18));
-        topPanel.add(Box.createHorizontalStrut(50)); // Espacio
+        topPanel.add(Box.createHorizontalStrut(50));
         topPanel.add(labelSaldoTotal);
 
         add(topPanel, BorderLayout.NORTH);
 
         // --- 2. PANEL CENTRAL (Tablas) ---
         JSplitPane splitPane = new JSplitPane();
-        splitPane.setDividerLocation(300); // 300px para cuentas
+        splitPane.setDividerLocation(300); // Espacio para la tabla de cuentas
 
         // TABLA CUENTAS (Izquierda)
         modeloCuentas = new DefaultTableModel();
         modeloCuentas.addColumn("Cuenta");
         modeloCuentas.addColumn("Saldo");
         JTable tablaCuentas = new JTable(modeloCuentas);
+        // Estilo básico
+        tablaCuentas.setRowHeight(25);
+        tablaCuentas.setFont(new Font("SansSerif", Font.PLAIN, 14));
+
         JPanel panelCuentas = new JPanel(new BorderLayout());
         panelCuentas.add(new JLabel("  Mis Cuentas"), BorderLayout.NORTH);
         panelCuentas.add(new JScrollPane(tablaCuentas), BorderLayout.CENTER);
@@ -87,10 +92,13 @@ public class VentanaPrincipal extends JFrame {
         modeloMovimientos.addColumn("Tipo");
         modeloMovimientos.addColumn("Categoría");
         modeloMovimientos.addColumn("Monto");
-        modeloMovimientos.addColumn("Detalle"); // Cuentas involucradas
+        modeloMovimientos.addColumn("Detalle");
+
         JTable tablaMovimientos = new JTable(modeloMovimientos);
+        tablaMovimientos.setRowHeight(25);
+
         JPanel panelMovs = new JPanel(new BorderLayout());
-        panelMovs.add(new JLabel("  Historial de Movimientos"), BorderLayout.NORTH);
+        panelMovs.add(new JLabel("  Historial de Movimientos (Por Cuenta)"), BorderLayout.NORTH);
         panelMovs.add(new JScrollPane(tablaMovimientos), BorderLayout.CENTER);
 
         splitPane.setLeftComponent(panelCuentas);
@@ -102,47 +110,62 @@ public class VentanaPrincipal extends JFrame {
     private JButton crearBoton(String texto, Color colorFondo) {
         JButton btn = new JButton(texto);
         btn.setBackground(colorFondo);
-        btn.setForeground(Color.BLACK); // Texto negro para contraste en amarillo/cyan
+        btn.setForeground(Color.BLACK);
         if (colorFondo.equals(new Color(220, 53, 69)) || colorFondo.equals(new Color(40, 167, 69))) {
-            btn.setForeground(Color.WHITE); // Texto blanco para Rojo/Verde
+            btn.setForeground(Color.WHITE);
         }
         btn.setFocusPainted(false);
+        btn.setFont(new Font("Arial", Font.BOLD, 12));
         return btn;
     }
 
-    // --- MÉTODOS DE LÓGICA UI ---
+    // --- MÉTODOS DE LÓGICA UI (Aquí está la magia nueva) ---
 
     private void cargarDatos() {
-        // 1. Limpiar tablas
+        // 1. Limpiar tablas visuales
         modeloCuentas.setRowCount(0);
         modeloMovimientos.setRowCount(0);
         double totalGlobal = 0;
 
-        // 2. Llenar Cuentas
+        // 2. Iterar sobre cada cuenta
         for (Cuenta c : usuario.getCuentas()) {
+
+            // Llenar tabla de Saldos (Izquierda)
             modeloCuentas.addRow(new Object[]{c.getNombre(), "$" + c.getBalance()});
             totalGlobal += c.getBalance();
 
-            // 3. Llenar Movimientos de esta cuenta (OJO: Pueden salir duplicados si no filtramos,
-            // pero para esta version simple mostremos todo lo que hay en cada cuenta)
+            // --- ORDENAMIENTO (Comparator) ---
+            // Ordenamos los registros de más antiguo a más nuevo
+            c.getRegistros().sort(Comparator.comparing(Registro::getFecha));
+
+            // --- SEPARADOR VISUAL ---
+            // Fila falsa para que se vea bonito
+            modeloMovimientos.addRow(new Object[]{
+                    "──────",
+                    "📂 " + c.getNombre().toUpperCase(), // Título de la cuenta
+                    "──────",
+                    "──────",
+                    "──────"
+            });
+
+            // 3. Llenar Movimientos (Derecha)
             for (Registro r : c.getRegistros()) {
                 String detalle = "";
                 String tipo = "";
 
                 if (r instanceof Gasto) {
                     tipo = "Gasto";
-                    detalle = c.getNombre();
+                    detalle = "Salida";
                 } else if (r instanceof Ingreso) {
                     tipo = "Ingreso";
-                    detalle = c.getNombre();
+                    detalle = "Entrada";
                 } else if (r instanceof Transferencia) {
-                    tipo = "Transferencia";
-                    // Hack rápido para mostrar info en tabla
-                    detalle = "Movimiento en " + c.getNombre();
+                    tipo = "Transf.";
+                    detalle = "Movimiento interno";
                 }
 
                 modeloMovimientos.addRow(new Object[]{
-                        r.getFecha().toLocalDate().toString(), // Solo fecha sin hora
+                        r.getFecha().toLocalDate().toString(), // Fecha limpia
                         tipo,
                         r.getCategoria(),
                         "$" + r.getMonto(),
@@ -163,9 +186,9 @@ public class VentanaPrincipal extends JFrame {
             double saldo = Double.parseDouble(saldoStr);
             Cuenta nueva = new Cuenta(nombre, saldo);
 
-            // Lógica Core + Persistencia
+            // Guardar en RAM y en DISCO
             usuario.addCuenta(nueva);
-            admin.actualizarCuentasFile(usuario);
+            admin.actualizarCuentasFile(usuario); // <--- Persistencia
 
             cargarDatos(); // Refrescar UI
             JOptionPane.showMessageDialog(this, "Cuenta creada!");
@@ -175,13 +198,12 @@ public class VentanaPrincipal extends JFrame {
     }
 
     private void registrarOperacion(String tipo) {
-        // Necesitamos listas para los ComboBox (Selectores)
         if (usuario.getCuentas().isEmpty()) {
             JOptionPane.showMessageDialog(this, "¡Primero crea una cuenta!");
             return;
         }
 
-        // Crear un Panel personalizado para el Pop-up
+        // Panel personalizado para el Pop-up
         JPanel panel = new JPanel(new GridLayout(0, 1));
 
         JComboBox<String> comboCuentas = new JComboBox<>();
@@ -215,7 +237,6 @@ public class VentanaPrincipal extends JFrame {
                 double monto = Double.parseDouble(txtMonto.getText());
                 Categoria cat = (Categoria) comboCat.getSelectedItem();
 
-                // Buscar objetos Cuenta reales
                 String nombreCuenta = (String) comboCuentas.getSelectedItem();
                 Cuenta cuentaSeleccionada = buscarCuenta(nombreCuenta);
 
@@ -235,13 +256,13 @@ public class VentanaPrincipal extends JFrame {
                     nuevoRegistro = new Transferencia(monto, LocalDateTime.now(), Categoria.TRANSFERENCIA, cuentaSeleccionada, cuentaDest);
                 }
 
-                // --- MOMENTO DE LA VERDAD (CORE + PERSISTENCIA) ---
+                // --- ATOMICIDAD + PERSISTENCIA ---
                 if (nuevoRegistro != null && nuevoRegistro.aplicar()) {
-                    // Guardar en archivo
+                    // Guardar en disco duro
                     admin.guardarRegistroFile(usuario, nuevoRegistro);
 
                     JOptionPane.showMessageDialog(this, "¡Éxito!");
-                    cargarDatos(); // Refrescar la tabla
+                    cargarDatos(); // Refrescar la tabla con los datos nuevos
                 } else {
                     JOptionPane.showMessageDialog(this, "Saldo insuficiente o error.");
                 }
@@ -252,7 +273,6 @@ public class VentanaPrincipal extends JFrame {
         }
     }
 
-    // Helper para buscar cuenta en la lista del usuario
     private Cuenta buscarCuenta(String nombre) {
         for (Cuenta c : usuario.getCuentas()) {
             if (c.getNombre().equals(nombre)) return c;
