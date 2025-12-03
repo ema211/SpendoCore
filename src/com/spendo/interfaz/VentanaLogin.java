@@ -1,29 +1,31 @@
 package com.spendo.interfaz;
 
+import com.spendo.core.Cuenta;
 import com.spendo.core.FinanceManager;
 import com.spendo.core.Usuario;
 import com.spendo.sistemaArchivos.AdminArchivos;
 import com.spendo.sistemaArchivos.ArchivoUsuarios;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.util.List;
 
 public class VentanaLogin extends JFrame {
 
     private JTextField userField;
     private JPasswordField passField;
-    private ArchivoUsuarios archivoUsuarios;
-    private AdminArchivos adminArchivos;
+    private final ArchivoUsuarios archivoUsuarios;
+    private final AdminArchivos adminArchivos;
 
     public VentanaLogin() {
-        // Configuración básica de la ventana
-        setTitle("Spendo - Iniciar Sesión");
-        setSize(400, 300);
+        setTitle("Spendo · Iniciar sesión");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null); // Centrar en pantalla
+        setSize(520, 380);
+        setLocationRelativeTo(null);
+        setMinimumSize(new Dimension(520, 360));
         setResizable(false);
 
-        // Instancias de lógica
         archivoUsuarios = new ArchivoUsuarios();
         adminArchivos = new AdminArchivos();
 
@@ -31,90 +33,194 @@ public class VentanaLogin extends JFrame {
     }
 
     private void initUI() {
-        // Usamos un Panel principal con Padding
-        JPanel mainPanel = new JPanel();
-        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
-        mainPanel.setBorder(BorderFactory.createEmptyBorder(30, 40, 30, 40));
-        mainPanel.setBackground(new Color(245, 245, 250)); // Color de fondo suave
+        JPanel root = new JPanel(new BorderLayout());
+        root.setBorder(new EmptyBorder(20, 20, 20, 20));
+        root.setBackground(new Color(241, 244, 249));
 
-        // Título Bonito
-        JLabel titleLabel = new JLabel("Spendo 💰");
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 28));
-        titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        titleLabel.setForeground(new Color(50, 50, 150)); // Azul oscuro
+        // Encabezado
+        JPanel header = new JPanel(new BorderLayout());
+        header.setOpaque(false);
 
-        // Campos
+        JLabel titulo = new JLabel("Spendo", SwingConstants.LEFT);
+        titulo.setFont(new Font("Segoe UI", Font.BOLD, 32));
+        titulo.setForeground(new Color(45, 51, 72));
+
+        JLabel subtitulo = new JLabel("Controla tus finanzas de forma sencilla", SwingConstants.LEFT);
+        subtitulo.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        subtitulo.setForeground(new Color(90, 98, 120));
+
+        header.add(titulo, BorderLayout.NORTH);
+        header.add(subtitulo, BorderLayout.SOUTH);
+
+        // Tarjeta central
+        JPanel card = new JPanel(new GridBagLayout());
+        card.setBackground(Color.WHITE);
+        card.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(225, 229, 238), 1, true),
+                new EmptyBorder(20, 24, 20, 24)
+        ));
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(6, 4, 6, 4);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 2;
+
+        JLabel lblBienvenida = new JLabel("Inicia sesión o crea tu cuenta");
+        lblBienvenida.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        lblBienvenida.setForeground(new Color(55, 64, 90));
+        card.add(lblBienvenida, gbc);
+
+        // Usuario
+        gbc.gridy++;
+        gbc.gridwidth = 1;
+        JLabel lblUsuario = new JLabel("Usuario");
+        lblUsuario.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        card.add(lblUsuario, gbc);
+
+        gbc.gridx = 1;
         userField = new JTextField();
+        userField.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        card.add(userField, gbc);
+
+        // Password
+        gbc.gridx = 0;
+        gbc.gridy++;
+        JLabel lblPass = new JLabel("Contraseña");
+        lblPass.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        card.add(lblPass, gbc);
+
+        gbc.gridx = 1;
         passField = new JPasswordField();
+        passField.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        card.add(passField, gbc);
 
-        // Botón
-        JButton btnLogin = new JButton("Ingresar / Registrar");
-        btnLogin.setBackground(new Color(70, 130, 180)); // Azul acero
-        btnLogin.setForeground(Color.WHITE);
-        btnLogin.setFont(new Font("Arial", Font.BOLD, 14));
-        btnLogin.setAlignmentX(Component.CENTER_ALIGNMENT);
-        btnLogin.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        // Espacio
+        gbc.gridx = 0;
+        gbc.gridy++;
+        gbc.gridwidth = 2;
+        gbc.insets = new Insets(12, 4, 4, 4);
+        card.add(Box.createVerticalStrut(8), gbc);
 
-        // Acción del botón
-        btnLogin.addActionListener(e -> procesarLogin());
+        // Botones
+        JPanel botones = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
+        botones.setOpaque(false);
 
-        // Añadir todo al panel
-        mainPanel.add(titleLabel);
-        mainPanel.add(Box.createRigidArea(new Dimension(0, 30))); // Espacio
-        mainPanel.add(new JLabel("Usuario:"));
-        mainPanel.add(userField);
-        mainPanel.add(Box.createRigidArea(new Dimension(0, 10)));
-        mainPanel.add(new JLabel("Contraseña:"));
-        mainPanel.add(passField);
-        mainPanel.add(Box.createRigidArea(new Dimension(0, 20)));
-        mainPanel.add(btnLogin);
+        JButton btnSalir = new JButton("Salir");
+        btnSalir.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        btnSalir.addActionListener(e -> System.exit(0));
 
-        add(mainPanel);
+        JButton btnIngresar = new JButton("Ingresar / Registrar");
+        btnIngresar.setFont(new Font("Segoe UI", Font.BOLD, 13));
+        btnIngresar.setBackground(new Color(76, 132, 255));
+        btnIngresar.setForeground(Color.WHITE);
+        btnIngresar.setFocusPainted(false);
+        btnIngresar.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        btnIngresar.addActionListener(e -> intentarLogin());
+
+        botones.add(btnSalir);
+        botones.add(btnIngresar);
+
+        gbc.gridy++;
+        gbc.insets = new Insets(6, 4, 0, 4);
+        card.add(botones, gbc);
+
+        root.add(header, BorderLayout.NORTH);
+        root.add(card, BorderLayout.CENTER);
+
+        setContentPane(root);
+
+        // Enter = botón de login
+        getRootPane().setDefaultButton(btnIngresar);
     }
 
-    private void procesarLogin() {
-        String user = userField.getText().trim();
-        String pass = new String(passField.getPassword()).trim();
+    private void intentarLogin() {
+        String username = userField.getText().trim();
+        String password = new String(passField.getPassword());
 
-        if (user.isEmpty() || pass.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Por favor llena todos los campos.", "Error", JOptionPane.ERROR_MESSAGE);
+        if (username.isEmpty() || password.isEmpty()) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Ingresa usuario y contraseña.",
+                    "Datos incompletos",
+                    JOptionPane.WARNING_MESSAGE
+            );
             return;
         }
 
-        // Lógica híbrida: Si no existe, registra. Si existe, valida.
-        if (!archivoUsuarios.usuarioExiste(user)) {
-            int respuesta = JOptionPane.showConfirmDialog(this,
-                    "El usuario no existe. ¿Quieres registrarte?",
-                    "Registro", JOptionPane.YES_NO_OPTION);
+        FinanceManager fm = FinanceManager.getInstance();
+        Usuario usuario = fm.buscarUsuario(username);
 
-            if (respuesta == JOptionPane.YES_OPTION) {
-                archivoUsuarios.registrarUsuarioFile(user, pass);
-                ingresarAlSistema(user);
+        boolean existeEnDisco = archivoUsuarios.usuarioExiste(username);
+
+        if (!existeEnDisco) {
+            int opcion = JOptionPane.showConfirmDialog(
+                    this,
+                    "El usuario \"" + username + "\" no existe.\n\n¿Deseas registrarlo?",
+                    "Registrar nuevo usuario",
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.QUESTION_MESSAGE
+            );
+
+            if (opcion != JOptionPane.YES_OPTION) {
+                return;
             }
+
+            // Crear carpeta y archivos base
+            archivoUsuarios.registrarUsuarioFile(username, password);
+
+            // Crear usuario en memoria
+            // Usamos username también como nombre completo por simplicidad
+            usuario = new Usuario(username, username, password);
+            fm.registrarUsuario(usuario);
+
+            // Crear una cuenta base opcional
+            Cuenta cuentaBase = new Cuenta("Efectivo", 0.0);
+            usuario.addCuenta(cuentaBase);
+            adminArchivos.actualizarCuentasFile(usuario);
+
         } else {
-            if (archivoUsuarios.validarCredenciales(user, pass)) {
-                ingresarAlSistema(user);
+            // Usuario existe en disco; si no está en memoria lo creamos
+            if (usuario == null) {
+                usuario = new Usuario(username, username, password);
+                fm.registrarUsuario(usuario);
             } else {
-                JOptionPane.showMessageDialog(this, "Contraseña incorrecta", "Error", JOptionPane.ERROR_MESSAGE);
+                // Validar contraseña solo contra lo que hay en memoria
+                if (!usuario.validarPassword(password)) {
+                    JOptionPane.showMessageDialog(
+                            this,
+                            "Contraseña incorrecta.",
+                            "Error de autenticación",
+                            JOptionPane.ERROR_MESSAGE
+                    );
+                    return;
+                }
             }
+
+            // Limpiar y cargar cuentas + registros desde archivos
+            List<Cuenta> cuentasArchivo = adminArchivos.cargarCuentas(username);
+            usuario.getCuentas().clear();
+            for (Cuenta c : cuentasArchivo) {
+                usuario.addCuenta(c);
+            }
+            adminArchivos.cargarRegistros(username, usuario);
         }
-    }
 
-    private void ingresarAlSistema(String username) {
-        // Cargar datos COMPLETOS antes de entrar
-        Usuario usuario = adminArchivos.cargarUsuarioCompleto(username);
+        fm.setUsuarioActual(usuario);
 
-        // Configurar Singleton
-        FinanceManager.getInstance().setUsuarioActual(usuario); // ¡Asegúrate de tener este setter en FinanceManager!
-        // Si no tienes setUsuarioActual, usa registrarUsuario(usuario) o similar.
+        // Abrir ventana principal
+        Usuario finalUsuario = usuario;
+        SwingUtilities.invokeLater(() -> {
+            VentanaPrincipal vp = new VentanaPrincipal(finalUsuario);
+            vp.setVisible(true);
+        });
 
-        // Abrir Dashboard
-        new VentanaPrincipal(usuario).setVisible(true);
-        this.dispose(); // Cerrar login
+        dispose();
     }
 
     public static void main(String[] args) {
-        // Look and Feel moderno (Nimbus)
+        // Look & Feel Nimbus si está disponible
         try {
             for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
@@ -122,7 +228,7 @@ public class VentanaLogin extends JFrame {
                     break;
                 }
             }
-        } catch (Exception e) {}
+        } catch (Exception ignored) {}
 
         SwingUtilities.invokeLater(() -> new VentanaLogin().setVisible(true));
     }
