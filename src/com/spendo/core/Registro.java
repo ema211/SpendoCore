@@ -1,21 +1,19 @@
 package com.spendo.core;
 
-import com.spendo.enums.Categoria;
 import java.time.LocalDateTime;
 
 public abstract class Registro {
     private double monto;
     private LocalDateTime fecha;
-    private Categoria categoria;
 
-    public Registro(double monto, LocalDateTime fecha, Categoria categoria) {
+
+    public Registro(double monto, LocalDateTime fecha) {
         this.monto = monto;
         this.fecha = fecha;
-        this.categoria = categoria;
     }
 
-    public Registro(double monto, Categoria categoria) {
-        this(monto, LocalDateTime.now(), categoria);
+    public Registro(double monto) {
+        this(monto, LocalDateTime.now());
     }
 
     public double getMonto() {
@@ -26,10 +24,8 @@ public abstract class Registro {
         return fecha;
     }
 
-    public Categoria getCategoria() {
-        return categoria;
-    }
-
     public abstract boolean aplicar();
     public abstract void revertir();
+
+
 }

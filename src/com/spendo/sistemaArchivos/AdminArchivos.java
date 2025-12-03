@@ -1,7 +1,10 @@
 package com.spendo.sistemaArchivos;
 
 import com.spendo.core.*;
-import com.spendo.enums.Categoria;
+import com.spendo.enums.CategoriaTransferencia;
+import com.spendo.enums.CategoriaGasto;
+import com.spendo.enums.CategoriaIngreso;
+
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -15,7 +18,6 @@ public class AdminArchivos {
 
     private final String RUTAPersonal = "database/carpetaUsuarios/";
 
-    // Guarda un registro (sigue usando Categoria.name())
     public void guardarRegistroFile(Usuario usuario, Registro registro) {
         String rutaRegistros = RUTAPersonal + usuario.getUsername() + "/registros.csv";
 
@@ -23,22 +25,25 @@ public class AdminArchivos {
 
             String tipo = "";
             String monto = String.valueOf(registro.getMonto());
-            String categoria = registro.getCategoria().name();
+            String categoria = "N/A";  // <<--- antes fallaba aquí
             String fecha = registro.getFecha().toString();
             String cuentaOrigen = "N/A";
             String cuentaDestino = "N/A";
 
             if (registro instanceof Transferencia t) {
                 tipo = "Transferencia";
+                categoria = t.getCategoria().name();    // <--- usa el enum correcto
                 cuentaOrigen = t.getCuentaOrigen().getNombre();
                 cuentaDestino = t.getCuentaDestino().getNombre();
 
             } else if (registro instanceof Gasto g) {
                 tipo = "Gasto";
+                categoria = g.getCategoria().name();    // <--- usa CategoriaGasto
                 cuentaOrigen = g.getCuenta().getNombre();
 
             } else if (registro instanceof Ingreso i) {
                 tipo = "Ingreso";
+                categoria = i.getCategoria().name();    // <--- usa CategoriaIngreso
                 cuentaDestino = i.getCuenta().getNombre();
             }
 
@@ -47,6 +52,7 @@ public class AdminArchivos {
         } catch (Exception e) {
             System.out.println("Error. No se pudo guardar el registro");
         }
+
         actualizarCuentasFile(usuario);
     }
 
@@ -96,34 +102,15 @@ public class AdminArchivos {
         try (BufferedReader br = new BufferedReader(new FileReader(ruta))) {
             br.readLine(); // saltar encabezado
             String linea;
+
             while ((linea = br.readLine()) != null) {
                 String[] datos = linea.split(",");
                 if (datos.length < 6) continue;
 
                 String tipo = datos[0].trim();
-                double monto;
-                try {
-                    monto = Double.parseDouble(datos[1].trim());
-                } catch (NumberFormatException e) {
-                    System.out.println("WARN: monto inválido -> " + datos[1]);
-                    continue;
-                }
-
-                Categoria categoria;
-                try {
-                    categoria = Categoria.valueOf(datos[2].trim());
-                } catch (IllegalArgumentException e) {
-                    System.out.println("WARN: categoría desconocida -> " + datos[2]);
-                    continue;
-                }
-
-                LocalDateTime fecha;
-                try {
-                    fecha = LocalDateTime.parse(datos[3].trim());
-                } catch (Exception e) {
-                    System.out.println("WARN: fecha inválida -> " + datos[3]);
-                    continue;
-                }
+                double monto = Double.parseDouble(datos[1].trim());
+                String categoriaStr = datos[2].trim();
+                LocalDateTime fecha = LocalDateTime.parse(datos[3].trim());
 
                 String origen = datos[4].trim();
                 String destino = datos[5].trim();
@@ -132,42 +119,54 @@ public class AdminArchivos {
                 Cuenta cuentaDestino = findCuentaByName(usuario, destino);
 
                 switch (tipo) {
+
                     case "Gasto":
-                        if (cuentaOrigen != null) {
-                            Registro g = new Gasto(monto, fecha, categoria, cuentaOrigen);
-                            cuentaOrigen.addRegistro(g);
-                        } else {
-                            System.out.println("WARN: cuenta origen no encontrada para gasto -> " + origen);
+                        try {
+                            CategoriaGasto catGasto = CategoriaGasto.valueOf(categoriaStr);
+                            if (cuentaOrigen != null) {
+                                Registro g = new Gasto(monto, fecha, catGasto, cuentaOrigen);
+                                cuentaOrigen.addRegistro(g);
+                            }
+                        } catch (Exception e) {
+                            System.out.println("WARN: categoría de gasto inválida -> " + categoriaStr);
                         }
                         break;
 
                     case "Ingreso":
-                        if (cuentaDestino != null) {
-                            Registro i = new Ingreso(monto, fecha, categoria, cuentaDestino);
-                            cuentaDestino.addRegistro(i);
-                        } else {
-                            System.out.println("WARN: cuenta destino no encontrada para ingreso -> " + destino);
+                        try {
+                            CategoriaIngreso catIngreso = CategoriaIngreso.valueOf(categoriaStr);
+                            if (cuentaDestino != null) {
+                                Registro i = new Ingreso(monto, fecha, catIngreso, cuentaDestino);
+                                cuentaDestino.addRegistro(i);
+                            }
+                        } catch (Exception e) {
+                            System.out.println("WARN: categoría de ingreso inválida -> " + categoriaStr);
                         }
                         break;
 
                     case "Transferencia":
-                        if (cuentaOrigen != null && cuentaDestino != null) {
-                            Registro t = new Transferencia(monto, fecha, categoria, cuentaOrigen, cuentaDestino);
-                            cuentaOrigen.addRegistro(t);
-                            cuentaDestino.addRegistro(t);
-                        } else {
-                            System.out.println("WARN: cuentas no encontradas para transferencia -> " + origen + " / " + destino);
+                        try {
+                            CategoriaTransferencia catTrans = CategoriaTransferencia.valueOf(categoriaStr);
+                            if (cuentaOrigen != null && cuentaDestino != null) {
+                                Registro t = new Transferencia(monto, fecha, catTrans, cuentaOrigen, cuentaDestino);
+                                cuentaOrigen.addRegistro(t);
+                                cuentaDestino.addRegistro(t);
+                            }
+                        } catch (Exception e) {
+                            System.out.println("WARN: categoría de transferencia inválida -> " + categoriaStr);
                         }
                         break;
 
                     default:
-                        System.out.println("WARN: tipo desconocido en registros.csv -> " + tipo);
+                        System.out.println("WARN: tipo desconocido -> " + tipo);
                 }
             }
+
         } catch (IOException e) {
             System.out.println("ERROR: No se pudieron cargar los registros del archivo.");
         }
     }
+
 
     // Cargar usuario completo: crea Usuario (username como username y nombreCompleto vacío), carga cuentas y registros
     public Usuario cargarUsuarioCompleto(String username) {

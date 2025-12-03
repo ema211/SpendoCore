@@ -1,7 +1,6 @@
 package com.spendo.interfaz;
 
 import com.spendo.core.*;
-import com.spendo.enums.Categoria;
 import com.spendo.sistemaArchivos.AdminArchivos;
 
 import javax.swing.*;
@@ -9,7 +8,7 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.time.LocalDateTime;
 import java.util.Comparator; // <--- Importante para ordenar
-import java.util.List;
+
 
 public class VentanaPrincipal extends JFrame {
 

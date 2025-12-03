@@ -1,10 +1,12 @@
 package com.spendo.core;
 
-import com.spendo.enums.Categoria;
+import com.spendo.enums.CategoriaGasto;
+
 import java.time.LocalDateTime;
 
 public class Gasto extends Registro {
     private Cuenta cuenta;
+    private CategoriaGasto categoria;
 
     /**
      * Constructor
@@ -13,8 +15,9 @@ public class Gasto extends Registro {
      * @param categoria : categoria asociada
      * @param cuenta : cuenta a la que se le quitara el dinero
      */
-    public Gasto(double monto, LocalDateTime fecha, Categoria categoria, Cuenta cuenta) {
-        super(monto,fecha,categoria);
+    public Gasto(double monto, LocalDateTime fecha, CategoriaGasto categoria, Cuenta cuenta) {
+        super(monto,fecha);
+        this.categoria = categoria;
         this.cuenta = cuenta;
     }
 
@@ -24,8 +27,9 @@ public class Gasto extends Registro {
      * @param categoria : categoria asociada
      * @param cuenta : cuenta a la que se le quitara el dinero
      */
-    public Gasto (double monto, Categoria categoria, Cuenta cuenta){
-        super(monto,categoria);
+    public Gasto (double monto, CategoriaGasto categoria, Cuenta cuenta){
+        super(monto);
+        this.categoria = categoria;
         this.cuenta = cuenta;
     }
 
@@ -53,4 +57,7 @@ public class Gasto extends Registro {
         return cuenta;
     }
 
+    public CategoriaGasto getCategoria() {
+        return categoria;
+    }
 }

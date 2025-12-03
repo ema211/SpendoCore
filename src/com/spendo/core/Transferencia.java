@@ -1,11 +1,13 @@
 package com.spendo.core;
 
-import com.spendo.enums.Categoria;
+import com.spendo.enums.CategoriaTransferencia;
+
 import java.time.LocalDateTime;
 
 public class Transferencia extends  Registro {
     private Cuenta cuentaOrigen;
     private Cuenta cuentaDestino;
+    private CategoriaTransferencia categoria;
 
     /**
      * Constructor
@@ -15,9 +17,10 @@ public class Transferencia extends  Registro {
      * @param cuentaOrigen : cuenta origen
      * @param cuentaDestino :  cuenta destino
      */
-    public Transferencia(double monto, LocalDateTime fecha, Categoria categoria,
+    public Transferencia(double monto, LocalDateTime fecha, CategoriaTransferencia categoria,
                          Cuenta cuentaOrigen, Cuenta cuentaDestino){
-        super(monto,fecha,categoria);
+        super(monto,fecha);
+        this.categoria = categoria;
         this.cuentaOrigen = cuentaOrigen;
         this.cuentaDestino = cuentaDestino;
     }
@@ -29,9 +32,10 @@ public class Transferencia extends  Registro {
      * @param cuentaOrigen : cuenta origen
      * @param cuentaDestino :  cuenta destino
      */
-    public Transferencia (double monto, Categoria categoria, Cuenta cuentaOrigen,
+    public Transferencia (double monto, CategoriaTransferencia categoria, Cuenta cuentaOrigen,
                           Cuenta cuentaDestino){
-        super(monto,categoria);
+        super(monto);
+        this.categoria = categoria;
         this.cuentaOrigen = cuentaOrigen;
         this.cuentaDestino = cuentaDestino;
     }
@@ -70,6 +74,10 @@ public class Transferencia extends  Registro {
 
     public Cuenta getCuentaDestino() {
         return this.cuentaDestino;
+    }
+
+    public CategoriaTransferencia getCategoria() {
+        return categoria;
     }
 
 }

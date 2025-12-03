@@ -17,7 +17,6 @@ public class FinanceManager {
         this.almacenamiento = new ArrayList<>();
         this.adminArchivos = new AdminArchivos();
     }
-
     public static FinanceManager getInstance() {
         if (instancia == null) {
             instancia = new FinanceManager();
