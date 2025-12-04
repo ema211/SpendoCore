@@ -32,18 +32,18 @@ public class AdminArchivos {
 
             if (registro instanceof Transferencia t) {
                 tipo = "Transferencia";
-                categoria = t.getCategoria().name();    // <--- usa el enum correcto
+                categoria = t.getCategoria().name();
                 cuentaOrigen = t.getCuentaOrigen().getNombre();
                 cuentaDestino = t.getCuentaDestino().getNombre();
 
             } else if (registro instanceof Gasto g) {
                 tipo = "Gasto";
-                categoria = g.getCategoria().name();    // <--- usa CategoriaGasto
+                categoria = g.getCategoria().name();
                 cuentaOrigen = g.getCuenta().getNombre();
 
             } else if (registro instanceof Ingreso i) {
                 tipo = "Ingreso";
-                categoria = i.getCategoria().name();    // <--- usa CategoriaIngreso
+                categoria = i.getCategoria().name();
                 cuentaDestino = i.getCuenta().getNombre();
             }
 
@@ -170,7 +170,6 @@ public class AdminArchivos {
 
     // Cargar usuario completo: crea Usuario (username como username y nombreCompleto vacío), carga cuentas y registros
     public Usuario cargarUsuarioCompleto(String username) {
-        // Creamos Usuario con nombreCompleto = username (puedes ajustar si tienes otro constructor)
         Usuario usuario = new Usuario(username, username, "");
 
         // Cargar cuentas y agregarlas al usuario
