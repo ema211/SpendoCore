@@ -25,7 +25,7 @@ public class AdminArchivos {
 
             String tipo = "";
             String monto = String.valueOf(registro.getMonto());
-            String categoria = "N/A";  // <<--- antes fallaba aquí
+            String categoria = "N/A";
             String fecha = registro.getFecha().toString();
             String cuentaOrigen = "N/A";
             String cuentaDestino = "N/A";
