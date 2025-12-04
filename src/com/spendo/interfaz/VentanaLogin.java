@@ -18,12 +18,21 @@ public class VentanaLogin extends JFrame {
     private final ArchivoUsuarios archivoUsuarios;
     private final AdminArchivos adminArchivos;
 
+    // Paleta de colores "elegante"
+    private static final Color COLOR_BACKGROUND = new Color(238, 242, 248);
+    private static final Color COLOR_CARD       = Color.WHITE;
+    private static final Color COLOR_BORDER     = new Color(220, 224, 235);
+    private static final Color COLOR_PRIMARY    = new Color(82, 109, 255);
+    private static final Color COLOR_PRIMARY_D  = new Color(62, 89, 230);
+    private static final Color COLOR_TEXT_MAIN  = new Color(40, 45, 68);
+    private static final Color COLOR_TEXT_SOFT  = new Color(108, 117, 140);
+
     public VentanaLogin() {
         setTitle("Spendo · Iniciar sesión");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(520, 380);
+        setSize(540, 400);
         setLocationRelativeTo(null);
-        setMinimumSize(new Dimension(520, 360));
+        setMinimumSize(new Dimension(540, 380));
         setResizable(false);
 
         archivoUsuarios = new ArchivoUsuarios();
@@ -33,30 +42,34 @@ public class VentanaLogin extends JFrame {
     }
 
     private void initUI() {
+        // Root
         JPanel root = new JPanel(new BorderLayout());
-        root.setBorder(new EmptyBorder(20, 20, 20, 20));
-        root.setBackground(new Color(241, 244, 249));
+        root.setBorder(new EmptyBorder(20, 24, 20, 24));
+        root.setBackground(COLOR_BACKGROUND);
 
-        // Encabezado
+        // Encabezado superior
         JPanel header = new JPanel(new BorderLayout());
         header.setOpaque(false);
 
         JLabel titulo = new JLabel("Spendo", SwingConstants.LEFT);
         titulo.setFont(new Font("Segoe UI", Font.BOLD, 32));
-        titulo.setForeground(new Color(45, 51, 72));
+        titulo.setForeground(COLOR_TEXT_MAIN);
 
-        JLabel subtitulo = new JLabel("Controla tus finanzas de forma sencilla", SwingConstants.LEFT);
+        JLabel subtitulo = new JLabel("Controla tus finanzas de forma clara y sencilla", SwingConstants.LEFT);
         subtitulo.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        subtitulo.setForeground(new Color(90, 98, 120));
+        subtitulo.setForeground(COLOR_TEXT_SOFT);
 
         header.add(titulo, BorderLayout.NORTH);
         header.add(subtitulo, BorderLayout.SOUTH);
 
         // Tarjeta central
+        JPanel cardWrapper = new JPanel(new GridBagLayout());
+        cardWrapper.setOpaque(false);
+
         JPanel card = new JPanel(new GridBagLayout());
-        card.setBackground(Color.WHITE);
+        card.setBackground(COLOR_CARD);
         card.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(225, 229, 238), 1, true),
+                BorderFactory.createLineBorder(COLOR_BORDER, 1, true),
                 new EmptyBorder(20, 24, 20, 24)
         ));
 
@@ -67,67 +80,113 @@ public class VentanaLogin extends JFrame {
         gbc.gridy = 0;
         gbc.gridwidth = 2;
 
-        JLabel lblBienvenida = new JLabel("Inicia sesión o crea tu cuenta");
-        lblBienvenida.setFont(new Font("Segoe UI", Font.BOLD, 16));
-        lblBienvenida.setForeground(new Color(55, 64, 90));
+        // Encabezado de la tarjeta
+        JLabel lblBienvenida = new JLabel("Bienvenido a Spendo");
+        lblBienvenida.setFont(new Font("Segoe UI", Font.BOLD, 18));
+        lblBienvenida.setForeground(COLOR_TEXT_MAIN);
         card.add(lblBienvenida, gbc);
 
-        // Usuario
+        gbc.gridy++;
+        JLabel lblDescripcion = new JLabel("Inicia sesión o crea tu cuenta para empezar", SwingConstants.LEFT);
+        lblDescripcion.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        lblDescripcion.setForeground(COLOR_TEXT_SOFT);
+        card.add(lblDescripcion, gbc);
+
+        // Separador visual
+        gbc.gridy++;
+        gbc.insets = new Insets(10, 4, 10, 4);
+        JSeparator separator = new JSeparator();
+        separator.setForeground(COLOR_BORDER);
+        card.add(separator, gbc);
+
+        gbc.insets = new Insets(6, 4, 6, 4);
+
+        // Campo Usuario
         gbc.gridy++;
         gbc.gridwidth = 1;
         JLabel lblUsuario = new JLabel("Usuario");
         lblUsuario.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        lblUsuario.setForeground(COLOR_TEXT_MAIN);
         card.add(lblUsuario, gbc);
 
         gbc.gridx = 1;
         userField = new JTextField();
         userField.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        userField.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(COLOR_BORDER),
+                new EmptyBorder(4, 6, 4, 6)
+        ));
         card.add(userField, gbc);
 
-        // Password
+        // Campo Password
         gbc.gridx = 0;
         gbc.gridy++;
         JLabel lblPass = new JLabel("Contraseña");
         lblPass.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        lblPass.setForeground(COLOR_TEXT_MAIN);
         card.add(lblPass, gbc);
 
         gbc.gridx = 1;
         passField = new JPasswordField();
         passField.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        passField.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(COLOR_BORDER),
+                new EmptyBorder(4, 6, 4, 6)
+        ));
         card.add(passField, gbc);
 
-        // Espacio
+        // Message hint
         gbc.gridx = 0;
         gbc.gridy++;
         gbc.gridwidth = 2;
-        gbc.insets = new Insets(12, 4, 4, 4);
-        card.add(Box.createVerticalStrut(8), gbc);
+        JLabel hint = new JLabel("Si el usuario no existe, se creará automáticamente.", SwingConstants.LEFT);
+        hint.setFont(new Font("Segoe UI", Font.ITALIC, 11));
+        hint.setForeground(COLOR_TEXT_SOFT);
+        card.add(hint, gbc);
 
         // Botones
+        gbc.gridy++;
+        gbc.insets = new Insets(14, 4, 0, 4);
         JPanel botones = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
         botones.setOpaque(false);
 
         JButton btnSalir = new JButton("Salir");
         btnSalir.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        btnSalir.setFocusPainted(false);
+        btnSalir.setCursor(new Cursor(Cursor.HAND_CURSOR));
         btnSalir.addActionListener(e -> System.exit(0));
 
         JButton btnIngresar = new JButton("Ingresar / Registrar");
         btnIngresar.setFont(new Font("Segoe UI", Font.BOLD, 13));
-        btnIngresar.setBackground(new Color(76, 132, 255));
+        btnIngresar.setBackground(COLOR_PRIMARY);
         btnIngresar.setForeground(Color.WHITE);
         btnIngresar.setFocusPainted(false);
+        btnIngresar.setBorder(BorderFactory.createEmptyBorder(6, 12, 6, 12));
         btnIngresar.setCursor(new Cursor(Cursor.HAND_CURSOR));
         btnIngresar.addActionListener(e -> intentarLogin());
+
+        // Efecto simple de hover
+        btnIngresar.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseEntered(java.awt.event.MouseEvent e) {
+                btnIngresar.setBackground(COLOR_PRIMARY_D);
+            }
+
+            @Override
+            public void mouseExited(java.awt.event.MouseEvent e) {
+                btnIngresar.setBackground(COLOR_PRIMARY);
+            }
+        });
 
         botones.add(btnSalir);
         botones.add(btnIngresar);
 
-        gbc.gridy++;
-        gbc.insets = new Insets(6, 4, 0, 4);
         card.add(botones, gbc);
 
+        cardWrapper.add(card);
+
         root.add(header, BorderLayout.NORTH);
-        root.add(card, BorderLayout.CENTER);
+        root.add(cardWrapper, BorderLayout.CENTER);
 
         setContentPane(root);
 
@@ -170,8 +229,7 @@ public class VentanaLogin extends JFrame {
             // Crear carpeta y archivos base
             archivoUsuarios.registrarUsuarioFile(username, password);
 
-            // Crear usuario en memoria
-            // Usamos username también como nombre completo por simplicidad
+            // Crear usuario en memoria (username como nombre completo por simplicidad)
             usuario = new Usuario(username, username, password);
             fm.registrarUsuario(usuario);
 
@@ -186,7 +244,7 @@ public class VentanaLogin extends JFrame {
                 usuario = new Usuario(username, username, password);
                 fm.registrarUsuario(usuario);
             } else {
-                // Validar contraseña solo contra lo que hay en memoria
+                // Validar contraseña contra lo que hay en memoria
                 if (!usuario.validarPassword(password)) {
                     JOptionPane.showMessageDialog(
                             this,
@@ -200,10 +258,14 @@ public class VentanaLogin extends JFrame {
 
             // Limpiar y cargar cuentas + registros desde archivos
             List<Cuenta> cuentasArchivo = adminArchivos.cargarCuentas(username);
+
+            // Aquí usamos los helpers que agregaste en el core:
+            // usuario.limpiarCuentas();
+            // usuario.agregarCuentas(cuentasArchivo);
+            // Si todavía no los llamas así, puedes adaptar el nombre.
             usuario.getCuentas().clear();
-            for (Cuenta c : cuentasArchivo) {
-                usuario.addCuenta(c);
-            }
+            usuario.getCuentas().addAll(cuentasArchivo);
+
             adminArchivos.cargarRegistros(username, usuario);
         }
 

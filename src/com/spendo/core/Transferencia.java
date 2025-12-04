@@ -47,18 +47,25 @@ public class Transferencia extends  Registro {
      */
     @Override
     public boolean aplicar() {
-        if (!this.cuentaOrigen.retirar(this.getMonto())){
+        if (this.cuentaOrigen == null || this.cuentaDestino == null) {
+            System.out.println("ERROR: cuenta null en Transferencia.aplicar()");
+            return false;
+        }
+
+        if (!this.cuentaOrigen.retirar(this.getMonto())) {
             return false;
         }
 
         this.cuentaDestino.depositar(this.getMonto());
-
         this.cuentaOrigen.addRegistro(this);
         this.cuentaDestino.addRegistro(this);
 
         return true;
     }
 
+    /**
+     * Elimina la Transferencia (this objeto)
+     */
     @Override
     public void revertir() {
         this.cuentaOrigen.depositar(this.getMonto());

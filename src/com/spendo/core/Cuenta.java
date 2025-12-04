@@ -74,6 +74,12 @@ public class Cuenta {
         this.registros.add(registro);
     }
 
+    //toString
+    @Override
+    public String toString() {
+        return nombre;
+    }
+
     //Getters
     public String getNombre() {
         return this.nombre;

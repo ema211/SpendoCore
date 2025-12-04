@@ -40,13 +40,22 @@ public class Gasto extends Registro {
      */
     @Override
     public boolean aplicar() {
-        if (!this.cuenta.retirar(this.getMonto())){
+        if (this.cuenta == null) {
+            System.out.println("ERROR: cuenta nula en Gasto.aplicar()");
             return false;
         }
+
+        if (!this.cuenta.retirar(this.getMonto())) {
+            return false;
+        }
+
         this.cuenta.addRegistro(this);
         return true;
     }
 
+    /**
+     * Elimina el Gasto (this objeto)
+     */
     @Override
     public void revertir() {
         this.cuenta.depositar(this.getMonto());

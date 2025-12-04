@@ -12,11 +12,19 @@ public class FinanceManager {
     // usuario actual (opcional para sesión)
     private Usuario usuarioActual;
 
+    /**
+     * Constructur privado para generar una sola instancia
+     */
     private FinanceManager() {
         System.out.println("¡Creando la instancia única de FinanceManager!");
         this.almacenamiento = new ArrayList<>();
         this.adminArchivos = new AdminArchivos();
     }
+
+    /**
+     * Metodo para obtener la instancia unica
+     * @return referencia de la instancia
+     */
     public static FinanceManager getInstance() {
         if (instancia == null) {
             instancia = new FinanceManager();
@@ -24,6 +32,10 @@ public class FinanceManager {
         return instancia;
     }
 
+    /**
+     *
+     * @param nuevoUsuario
+     */
     public void registrarUsuario(Usuario nuevoUsuario){
         for(Usuario usuario : almacenamiento){
             if (usuario.getUsername().equals(nuevoUsuario.getUsername())){

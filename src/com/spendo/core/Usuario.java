@@ -66,4 +66,20 @@ public class Usuario {
         return null;
     }
 
+    public void limpiarCuentas() {
+        this.cuentas.clear();
+    }
+
+    public void agregarCuentas(List<Cuenta> nuevas) {
+        this.cuentas.addAll(nuevas);
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public void setNombreCompleto(String nombreCompleto) {
+        this.nombreCompleto = nombreCompleto;
+    }
+
 }

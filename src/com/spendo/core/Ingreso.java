@@ -45,6 +45,9 @@ public class Ingreso extends Registro {
         return true;
     }
 
+    /**
+     * Elimina el Ingreso (this objeto)
+     */
     @Override
     public void revertir() {
         this.cuenta.retirar(this.getMonto());
