@@ -74,21 +74,35 @@ public class Cuenta {
         this.registros.add(registro);
     }
 
-    //toString
+    /**
+     * toString de la clase
+     * @return el nombre de la cuenta en String
+     */
     @Override
     public String toString() {
         return nombre;
     }
 
-    //Getters
+    /**
+     * Getter para nombre
+     * @return String del nombre
+     */
     public String getNombre() {
         return this.nombre;
     }
 
+    /**
+     *  Getter del balance
+     * @return  balance en tipo double
+     */
     public double getBalance() {
         return this.balance;
     }
 
+    /**
+     *  Getter para la lista de registros
+     * @return  la lista de registros en tipo List<Registro>
+     */
     public List<Registro> getRegistros() {
         return this.registros;
     }

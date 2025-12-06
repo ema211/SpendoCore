@@ -10,24 +10,26 @@ public class Gasto extends Registro {
 
     /**
      * Constructor
-     * @param monto : cantidad a restar
-     * @param fecha : fecha del registro
+     *
+     * @param monto     : cantidad a restar
+     * @param fecha     : fecha del registro
      * @param categoria : categoria asociada
-     * @param cuenta : cuenta a la que se le quitara el dinero
+     * @param cuenta    : cuenta a la que se le quitara el dinero
      */
     public Gasto(double monto, LocalDateTime fecha, CategoriaGasto categoria, Cuenta cuenta) {
-        super(monto,fecha);
+        super(monto, fecha);
         this.categoria = categoria;
         this.cuenta = cuenta;
     }
 
     /**
      * Constructor con fecha actual de registro
-     * @param monto : cantidad a restar
+     *
+     * @param monto     : cantidad a restar
      * @param categoria : categoria asociada
-     * @param cuenta : cuenta a la que se le quitara el dinero
+     * @param cuenta    : cuenta a la que se le quitara el dinero
      */
-    public Gasto (double monto, CategoriaGasto categoria, Cuenta cuenta){
+    public Gasto(double monto, CategoriaGasto categoria, Cuenta cuenta) {
         super(monto);
         this.categoria = categoria;
         this.cuenta = cuenta;
@@ -36,6 +38,7 @@ public class Gasto extends Registro {
     /**
      * Metodo abstracto heredaro de Registro
      * Aplica el gasto a la cuenta objetivo
+     *
      * @return true si la operacion fue exitosa
      */
     @Override
@@ -62,10 +65,19 @@ public class Gasto extends Registro {
         this.cuenta.getRegistros().remove(this);
     }
 
+    /**
+     * Getter para obtener la cuenta destino
+     *
+     * @return cuenta destino
+     */
     public Cuenta getCuenta() {
         return cuenta;
     }
 
+    /**
+     * Getter para obtener la categoria
+     * @return la categoria
+     */
     public CategoriaGasto getCategoria() {
         return categoria;
     }

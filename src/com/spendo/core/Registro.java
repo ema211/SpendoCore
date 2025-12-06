@@ -33,8 +33,18 @@ public abstract class Registro {
         return fecha;
     }
 
-    //Metodos abstractos
+
+    /**
+     * Aplica el efecto del registro en la(s) cuenta(s) asociada(s).
+     *
+     * @return true si la operación se aplicó correctamente.
+     */
     public abstract boolean aplicar();
+
+
+    /**
+     * Revierte el efecto del registro en la(s) cuenta(s) asociada(s).
+     */
     public abstract void revertir();
 
 }

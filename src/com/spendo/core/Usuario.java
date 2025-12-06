@@ -40,14 +40,26 @@ public class Usuario {
         return password.equals(passwordIngresada);
     }
 
+    /**
+     * Getter para el nombre completo
+     * @return nombre completo en String
+     */
     public String getNombreCompleto() {
         return nombreCompleto;
     }
 
+    /**
+     *  Getter para el username
+     * @return username en tipo String
+     */
     public String getUsername() {
         return username;
     }
 
+    /**
+     *  Getter para la lista de cuentas
+     * @return lista de cuentas en tipo List<Cuenta>
+     */
     public List<Cuenta> getCuentas() {
         return cuentas;
     }
@@ -64,22 +76,6 @@ public class Usuario {
             }
         }
         return null;
-    }
-
-    public void limpiarCuentas() {
-        this.cuentas.clear();
-    }
-
-    public void agregarCuentas(List<Cuenta> nuevas) {
-        this.cuentas.addAll(nuevas);
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public void setNombreCompleto(String nombreCompleto) {
-        this.nombreCompleto = nombreCompleto;
     }
 
 }

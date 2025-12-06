@@ -33,8 +33,8 @@ public class FinanceManager {
     }
 
     /**
-     *
-     * @param nuevoUsuario
+     * Registra un nuevo usuario en la lista de usuarios
+     * @param nuevoUsuario usuario a registrar
      */
     public void registrarUsuario(Usuario nuevoUsuario){
         for(Usuario usuario : almacenamiento){
@@ -46,6 +46,11 @@ public class FinanceManager {
         almacenamiento.add(nuevoUsuario);
     }
 
+    /**
+     *  Busca un usuario dentro de la lista de  usuarios
+     * @param username usuario a buscar
+     * @return referencia del usuario encontrado
+     */
     public Usuario buscarUsuario(String username){
         for(Usuario usuario : almacenamiento){
             if (usuario.getUsername().equals(username)){

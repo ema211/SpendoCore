@@ -54,10 +54,19 @@ public class Ingreso extends Registro {
         this.cuenta.getRegistros().remove(this);
     }
 
+    /**
+     * Getter para obtener la cuenta destino
+     *
+     * @return cuenta destino
+     */
     public Cuenta getCuenta() {
         return cuenta;
     }
 
+    /**
+     * Getter para obtener la categoria
+     * @return la categoria
+     */
     public CategoriaIngreso getCategoria() {
         return categoria;
     }

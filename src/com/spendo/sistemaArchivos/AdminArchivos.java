@@ -18,6 +18,13 @@ public class AdminArchivos {
 
     private final String RUTAPersonal = "database/carpetaUsuarios/";
 
+    /**
+     * Guarda un registro financiero en el archivo registros.csv del usuario
+     * y actualiza el archivo de cuentas con los nuevos balances.
+     *
+     * @param usuario  Usuario al que pertenece el registro.
+     * @param registro Registro a guardar (Gasto, Ingreso o Transferencia).
+     */
     public void guardarRegistroFile(Usuario usuario, Registro registro) {
         String rutaRegistros = RUTAPersonal + usuario.getUsername() + "/registros.csv";
 
@@ -56,7 +63,12 @@ public class AdminArchivos {
         actualizarCuentasFile(usuario);
     }
 
-    // Actualiza cuentas.csv (sobrescribe)
+    /**
+     * Sobrescribe el archivo cuentas.csv del usuario con el estado actual
+     * de las cuentas en memoria (nombre y balance).
+     *
+     * @param usuario Usuario cuyas cuentas se deben persistir.
+     */
     public void actualizarCuentasFile(Usuario usuario) {
         String rutaCuentas = RUTAPersonal + usuario.getUsername() + "/cuentas.csv";
 
@@ -70,7 +82,12 @@ public class AdminArchivos {
         }
     }
 
-    // Cargar cuentas desde cuentas.csv
+    /**
+     * Carga las cuentas de un usuario desde su archivo cuentas.csv.
+     *
+     * @param username Nombre de usuario que identifica la carpeta en disco.
+     * @return Lista de cuentas reconstruidas a partir del archivo.
+     */
     public List<Cuenta> cargarCuentas(String username) {
         List<Cuenta> cuentasCargadas = new ArrayList<>();
         String rutaCuentas = RUTAPersonal + username + "/cuentas.csv";
@@ -95,7 +112,14 @@ public class AdminArchivos {
         return cuentasCargadas;
     }
 
-    // Cargar registros: lee registros.csv y añade objetos a las cuentas en RAM (no reaplica)
+    /**
+     * Carga los registros del archivo registros.csv y los agrega
+     * a las cuentas correspondientes del usuario ya cargado en memoria.
+     * No modifica los balances, solo reconstruye el historial.
+     *
+     * @param username Nombre de usuario que identifica la carpeta en disco.
+     * @param usuario  Usuario cuyas cuentas recibirán los registros.
+     */
     public void cargarRegistros(String username, Usuario usuario) {
         String ruta = RUTAPersonal + username + "/registros.csv";
 
@@ -168,7 +192,13 @@ public class AdminArchivos {
     }
 
 
-    // Cargar usuario completo: crea Usuario (username como username y nombreCompleto vacío), carga cuentas y registros
+    /**
+     * Reconstruye un usuario solamente a partir de su username,
+     * cargando sus cuentas y registros desde los archivos CSV correspondientes.
+     *
+     * @param username Nombre de usuario que identifica los archivos en disco.
+     * @return Objeto Usuario con cuentas y registros cargados.
+     */
     public Usuario cargarUsuarioCompleto(String username) {
         Usuario usuario = new Usuario(username, username, "");
 
@@ -184,7 +214,13 @@ public class AdminArchivos {
         return usuario;
     }
 
-    // Buscar cuenta por nombre en las cuentas del usuario
+    /**
+     * Busca una cuenta en el usuario por su nombre.
+     *
+     * @param usuario Usuario que contiene las cuentas.
+     * @param nombre  Nombre de la cuenta a buscar.
+     * @return Cuenta encontrada o null si no existe.
+     */
     private Cuenta findCuentaByName(Usuario usuario, String nombre) {
         if (nombre == null) return null;
         for (Cuenta c : usuario.getCuentas()) {
