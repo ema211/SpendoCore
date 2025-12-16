@@ -1,5 +1,6 @@
 package com.spendo.core;
 
+import com.spendo.core.exceptions.CuentaNoEncontradaException;
 import com.spendo.enums.CategoriaIngreso;
 
 import java.time.LocalDateTime;
@@ -17,8 +18,12 @@ public class Ingreso extends Registro {
      */
     public Ingreso(double monto, LocalDateTime fecha, CategoriaIngreso categoria, Cuenta cuenta) {
         super(monto,fecha);
-        this.categoria = categoria;
+
+        if ( cuenta == null ) {
+            throw new CuentaNoEncontradaException("Cuenta no encontrada al crear el ingreso");
+        }
         this.cuenta = cuenta;
+        this.categoria = categoria;
     }
 
     /**
@@ -29,20 +34,21 @@ public class Ingreso extends Registro {
      */
     public Ingreso(double monto, CategoriaIngreso categoria, Cuenta cuenta) {
         super(monto);
-        this.categoria = categoria;
+        if ( cuenta == null ) {
+            throw new CuentaNoEncontradaException("Cuenta no encontrada al crear el ingreso");
+        }
         this.cuenta = cuenta;
+        this.categoria = categoria;
     }
 
     /**
      * Metodo abstracto heredaro de Registro
      * Aplica el ingreso a la cuenta objetivo
-     * @return true siempre (porque recibir dinero siempre es un exito:D)
      */
     @Override
-    public boolean aplicar() {
+    public void aplicar() {
          this.cuenta.depositar(this.getMonto());
          this.cuenta.addRegistro(this);
-        return true;
     }
 
     /**

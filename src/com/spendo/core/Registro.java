@@ -39,7 +39,7 @@ public abstract class Registro {
      *
      * @return true si la operación se aplicó correctamente.
      */
-    public abstract boolean aplicar();
+    public abstract void aplicar();
 
 
     /**

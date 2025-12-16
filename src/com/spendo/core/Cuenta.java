@@ -1,8 +1,12 @@
 package com.spendo.core;
 
+
+
 import java.util.List;
 import java.util.ArrayList;
 
+import com.spendo.core.exceptions.MontoInvalidoException;
+import com.spendo.core.exceptions.SaldoInsuficienteException;
 
 public class Cuenta {
     //Atributos
@@ -35,35 +39,33 @@ public class Cuenta {
     /**
      * Aumenta 'monto' cantidad al balance
      * @param monto : Cantidad a aumentar a balance
+     * @throws MontoInvalidoException si el monto es menor o igual a cero
      */
     public void depositar(double monto) {
         if (monto > 0) {
             this.balance += monto;
         } else {
-            // Debug, monto debe de ser siempre positivo.
-            System.out.println("Error: El monto a depositar debe ser positivo.");
+            throw new  MontoInvalidoException("Monto invalido");
         }
     }
 
     /**
      * Resta 'monto' cantidad al balance
      * @param monto : Cantidad a restar a balance
-     * @return true si la operación fue exitosa(si el monto es positivo y si hay balance suficiente)
+     * @throws MontoInvalidoException si el monto es menor o igual a cero
+     * @throws SaldoInsuficienteException si el balance no es suficiente para cubrir el retiro
      */
-    public boolean retirar(double monto) {
+    public void retirar(double monto) {
         if (monto <= 0) {
-            System.out.println("Error: El monto a retirar debe ser positivo.");
-            return false;
+            throw new  MontoInvalidoException("Monto invalido");
         }
 
         if (monto > this.balance) {
-            System.out.println("Error: Fondos insuficientes.");
-            return false;
+            throw new SaldoInsuficienteException("Fondos insuficientes");
         }
 
         // Si todo está bien, restamos
         this.balance -= monto;
-        return true;
     }
 
     /**
