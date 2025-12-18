@@ -1,9 +1,11 @@
 package com.spendo.core;
 
 import com.spendo.core.exceptions.CuentaNoEncontradaException;
+import com.spendo.core.exceptions.OperacionInvalidaException;
 import com.spendo.enums.CategoriaIngreso;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 public class Ingreso extends Registro {
     private Cuenta cuenta;
@@ -15,30 +17,33 @@ public class Ingreso extends Registro {
      * @param fecha : fecha del registro
      * @param categoria : categoria asociada
      * @param cuenta : cuenta a la que se agregara dinero
+     * @throws CuentaNoEncontradaException si la cuenta es nula
+     * @throws OperacionInvalidaException si el monto es menor o igual a cero,
+     *         la fecha es nula o el id es nulo
      */
-    public Ingreso(double monto, LocalDateTime fecha, CategoriaIngreso categoria, Cuenta cuenta) {
-        super(monto,fecha);
+    public Ingreso(double monto, LocalDateTime fecha, UUID id, CategoriaIngreso categoria, Cuenta cuenta) {
+        super(monto,fecha,id);
 
         if ( cuenta == null ) {
             throw new CuentaNoEncontradaException("Cuenta no encontrada al crear el ingreso");
         }
+
         this.cuenta = cuenta;
         this.categoria = categoria;
     }
 
     /**
-     * Constructor con fecha actual de registro
-     * @param monto : cantidad a aumentar
+     * Constructor
+     * Se crea con un id autogenerado
+     * @param monto     : cantidad a restar
+     * @param fecha     : fecha del registro
      * @param categoria : categoria asociada
-     * @param cuenta : cuenta a la que se agregara dinero
+     * @param cuenta    : cuenta a la que se le quitara el dinero
+     * @throws CuentaNoEncontradaException si la cuenta es nula
+     * @throws OperacionInvalidaException si el monto es menor o igual a cero o si la fecha es nula
      */
-    public Ingreso(double monto, CategoriaIngreso categoria, Cuenta cuenta) {
-        super(monto);
-        if ( cuenta == null ) {
-            throw new CuentaNoEncontradaException("Cuenta no encontrada al crear el ingreso");
-        }
-        this.cuenta = cuenta;
-        this.categoria = categoria;
+    public Ingreso(double monto, LocalDateTime fecha, CategoriaIngreso categoria, Cuenta cuenta) {
+        this(monto,fecha,UUID.randomUUID(),categoria,cuenta);
     }
 
     /**
@@ -60,7 +65,7 @@ public class Ingreso extends Registro {
         this.cuenta.getRegistros().remove(this);
     }
 
-    /*ñ{{  * Getter para obtener la cuenta destino
+    /** Getter para obtener la cuenta destino
      *
      * @return cuenta destino
      */

@@ -53,15 +53,10 @@ public class Cuenta {
      * Resta 'monto' cantidad al balance
      * @param monto : Cantidad a restar a balance
      * @throws MontoInvalidoException si el monto es menor o igual a cero
-     * @throws SaldoInsuficienteException si el balance no es suficiente para cubrir el retiro
      */
     public void retirar(double monto) {
         if (monto <= 0) {
             throw new  MontoInvalidoException("Monto invalido");
-        }
-
-        if (monto > this.balance) {
-            throw new SaldoInsuficienteException("Fondos insuficientes");
         }
 
         // Si todo está bien, restamos

@@ -70,9 +70,7 @@ public class Transferencia extends  Registro {
      * registrando la operación en ambas cuentas.
      *
      * @throws MontoInvalidoException si el monto es menor o igual a cero
-     * @throws SaldoInsuficienteException si la cuenta de origen no tiene fondos suficientes
      */
-
     @Override
     public void aplicar() {
         this.cuentaOrigen.retirar(this.getMonto());
@@ -88,7 +86,6 @@ public class Transferencia extends  Registro {
      * eliminando el registro de ambas cuentas.
      *
      * @throws MontoInvalidoException si el monto es inválido
-     * @throws SaldoInsuficienteException si la cuenta destino no tiene fondos suficientes
      */
 
     @Override
