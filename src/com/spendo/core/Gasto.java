@@ -1,7 +1,6 @@
 package com.spendo.core;
 
 import com.spendo.core.exceptions.CuentaNoEncontradaException;
-import com.spendo.core.exceptions.DomainException;
 import com.spendo.core.exceptions.MontoInvalidoException;
 import com.spendo.core.exceptions.SaldoInsuficienteException;
 import com.spendo.enums.CategoriaGasto;
@@ -47,12 +46,13 @@ public class Gasto extends Registro {
 
 
     /**
-     * Aplica el gasto a la cuenta asociada.
+     * Aplica el gasto a la cuenta asociada:
+     * retira el monto del balance y registra la operación en la cuenta.
      *
-     * @throws CuentaNoEncontradaException si la cuenta no existe
-     * @throws MontoInvalidoException si el monto es inválido
+     * @throws MontoInvalidoException si el monto es menor o igual a cero
      * @throws SaldoInsuficienteException si no hay fondos suficientes
      */
+
     @Override
     public void aplicar() {
         this.cuenta.retirar(this.getMonto());
@@ -60,7 +60,10 @@ public class Gasto extends Registro {
     }
 
     /**
-     * Elimina el Gasto (this objeto)
+     * Revierte el gasto:
+     * devuelve el monto al balance y elimina el registro de la lista de la cuenta.
+     *
+     * @throws MontoInvalidoException si el monto es menor o igual a cero
      */
     @Override
     public void revertir() {
@@ -69,9 +72,7 @@ public class Gasto extends Registro {
     }
 
     /**
-     * Getter para obtener la cuenta destino
-     *
-     * @return cuenta destino
+     * @return la cuenta asociada al gasto
      */
     public Cuenta getCuenta() {
         return cuenta;

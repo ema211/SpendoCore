@@ -1,5 +1,7 @@
 package com.spendo.core;
 
+import com.spendo.core.exceptions.CuentaNoEncontradaException;
+import com.spendo.core.exceptions.OperacionInvalidaException;
 import com.spendo.enums.CategoriaTransferencia;
 
 import java.time.LocalDateTime;
@@ -10,62 +12,85 @@ public class Transferencia extends  Registro {
     private CategoriaTransferencia categoria;
 
     /**
-     * Constructor
-     * @param monto : cantidad a transferir
-     * @param fecha : fecha del registro
-     * @param categoria : categoria asociada
-     * @param cuentaOrigen : cuenta origen
-     * @param cuentaDestino :  cuenta destino
+     * Crea una transferencia entre dos cuentas.
+     *
+     * @param monto cantidad a transferir
+     * @param fecha fecha del registro
+     * @param categoria categoría asociada a la transferencia
+     * @param cuentaOrigen cuenta desde la cual se retira el dinero
+     * @param cuentaDestino cuenta a la cual se deposita el dinero
+     *
+     * @throws CuentaNoEncontradaException si la cuenta de origen o destino es nula
+     * @throws OperacionInvalidaException si la cuenta de origen y destino son la misma
      */
     public Transferencia(double monto, LocalDateTime fecha, CategoriaTransferencia categoria,
                          Cuenta cuentaOrigen, Cuenta cuentaDestino){
+
         super(monto,fecha);
-        this.categoria = categoria;
+        if (cuentaOrigen == null || cuentaDestino == null){
+            throw new CuentaNoEncontradaException("Cuenta de origen o destino no encontrada");
+        }
+        if (cuentaOrigen == cuentaDestino){
+            throw new OperacionInvalidaException("Transferencia a la misma cuenta");
+        }
         this.cuentaOrigen = cuentaOrigen;
         this.cuentaDestino = cuentaDestino;
+        this.categoria = categoria;
     }
 
     /**
-     * Constructor con fecha actual de registro
-     * @param monto : cantidad a transferir
-     * @param categoria : categoria asociada
-     * @param cuentaOrigen : cuenta origen
-     * @param cuentaDestino :  cuenta destino
+     * Crea una transferencia con la fecha actual del sistema.
+     *
+     * @param monto cantidad a transferir
+     * @param categoria categoría asociada a la transferencia
+     * @param cuentaOrigen cuenta desde la cual se retira el dinero
+     * @param cuentaDestino cuenta a la cual se deposita el dinero
+     *
+     * @throws CuentaNoEncontradaException si la cuenta de origen o destino es nula
+     * @throws OperacionInvalidaException si la cuenta de origen y destino son la misma
      */
+
     public Transferencia (double monto, CategoriaTransferencia categoria, Cuenta cuentaOrigen,
                           Cuenta cuentaDestino){
         super(monto);
-        this.categoria = categoria;
+        if (cuentaOrigen == null || cuentaDestino == null){
+            throw new CuentaNoEncontradaException("Cuenta de origen o destino no encontrada");
+        }
+        if (cuentaOrigen == cuentaDestino){
+            throw new OperacionInvalidaException("Transferencia a la misma cuenta");
+        }
         this.cuentaOrigen = cuentaOrigen;
         this.cuentaDestino = cuentaDestino;
+        this.categoria = categoria;
     }
 
     /**
-     * Metodo abstracto heredaro de Registro
-     * Aplica el ingreso a la cuenta objetivo y el gasto a la de origen
-     * @return true si la operacion fue exitosa
+     * Aplica la transferencia:
+     * retira el monto de la cuenta de origen y lo deposita en la cuenta destino,
+     * registrando la operación en ambas cuentas.
+     *
+     * @throws MontoInvalidoException si el monto es menor o igual a cero
+     * @throws SaldoInsuficienteException si la cuenta de origen no tiene fondos suficientes
      */
+
     @Override
-    public boolean aplicar() {
-        if (this.cuentaOrigen == null || this.cuentaDestino == null) {
-            System.out.println("ERROR: cuenta null en Transferencia.aplicar()");
-            return false;
-        }
-
-        if (!this.cuentaOrigen.retirar(this.getMonto())) {
-            return false;
-        }
-
+    public void aplicar() {
+        this.cuentaOrigen.retirar(this.getMonto());
         this.cuentaDestino.depositar(this.getMonto());
+
         this.cuentaOrigen.addRegistro(this);
         this.cuentaDestino.addRegistro(this);
-
-        return true;
     }
 
     /**
-     * Elimina la Transferencia (this objeto)
+     * Revierte la transferencia:
+     * devuelve el monto a la cuenta de origen y lo retira de la cuenta destino,
+     * eliminando el registro de ambas cuentas.
+     *
+     * @throws MontoInvalidoException si el monto es inválido
+     * @throws SaldoInsuficienteException si la cuenta destino no tiene fondos suficientes
      */
+
     @Override
     public void revertir() {
         this.cuentaOrigen.depositar(this.getMonto());
@@ -75,14 +100,25 @@ public class Transferencia extends  Registro {
         this.cuentaDestino.getRegistros().remove(this);
     }
 
+    /**
+     * @return la cuenta de origen de la transferencia
+     */
+
     public Cuenta getCuentaOrigen() {
         return this.cuentaOrigen;
     }
+
+    /**
+     * @return la cuenta de destino de la transferencia
+     */
 
     public Cuenta getCuentaDestino() {
         return this.cuentaDestino;
     }
 
+    /**
+     * @return la categoria de la transferencia
+     */
     public CategoriaTransferencia getCategoria() {
         return categoria;
     }

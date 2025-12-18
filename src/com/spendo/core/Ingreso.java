@@ -60,8 +60,7 @@ public class Ingreso extends Registro {
         this.cuenta.getRegistros().remove(this);
     }
 
-    /**
-     * Getter para obtener la cuenta destino
+    /*ñ{{  * Getter para obtener la cuenta destino
      *
      * @return cuenta destino
      */
