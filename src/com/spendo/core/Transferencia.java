@@ -1,10 +1,12 @@
 package com.spendo.core;
 
 import com.spendo.core.exceptions.CuentaNoEncontradaException;
+import com.spendo.core.exceptions.MontoInvalidoException;
 import com.spendo.core.exceptions.OperacionInvalidaException;
 import com.spendo.enums.CategoriaTransferencia;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 public class Transferencia extends  Registro {
     private Cuenta cuentaOrigen;
@@ -22,11 +24,13 @@ public class Transferencia extends  Registro {
      *
      * @throws CuentaNoEncontradaException si la cuenta de origen o destino es nula
      * @throws OperacionInvalidaException si la cuenta de origen y destino son la misma
+     * @throws OperacionInvalidaException si el monto es menor o igual a cero,
+     *         la fecha es nula o el id es nulo
      */
-    public Transferencia(double monto, LocalDateTime fecha, CategoriaTransferencia categoria,
+    public Transferencia(double monto, LocalDateTime fecha, UUID id, CategoriaTransferencia categoria,
                          Cuenta cuentaOrigen, Cuenta cuentaDestino){
 
-        super(monto,fecha);
+        super(monto,fecha,id);
         if (cuentaOrigen == null || cuentaDestino == null){
             throw new CuentaNoEncontradaException("Cuenta de origen o destino no encontrada");
         }
@@ -39,29 +43,21 @@ public class Transferencia extends  Registro {
     }
 
     /**
-     * Crea una transferencia con la fecha actual del sistema.
+     * Crea una transferencia entre dos cuentas.
      *
      * @param monto cantidad a transferir
+     * @param fecha fecha del registro
      * @param categoria categoría asociada a la transferencia
      * @param cuentaOrigen cuenta desde la cual se retira el dinero
      * @param cuentaDestino cuenta a la cual se deposita el dinero
      *
      * @throws CuentaNoEncontradaException si la cuenta de origen o destino es nula
      * @throws OperacionInvalidaException si la cuenta de origen y destino son la misma
+     * @throws OperacionInvalidaException si el monto es menor o igual a cero, la fecha es nula
      */
-
-    public Transferencia (double monto, CategoriaTransferencia categoria, Cuenta cuentaOrigen,
+    public Transferencia (double monto, LocalDateTime fecha, CategoriaTransferencia categoria, Cuenta cuentaOrigen,
                           Cuenta cuentaDestino){
-        super(monto);
-        if (cuentaOrigen == null || cuentaDestino == null){
-            throw new CuentaNoEncontradaException("Cuenta de origen o destino no encontrada");
-        }
-        if (cuentaOrigen == cuentaDestino){
-            throw new OperacionInvalidaException("Transferencia a la misma cuenta");
-        }
-        this.cuentaOrigen = cuentaOrigen;
-        this.cuentaDestino = cuentaDestino;
-        this.categoria = categoria;
+        this(monto,fecha,UUID.randomUUID(),categoria,cuentaOrigen,cuentaDestino);
     }
 
     /**

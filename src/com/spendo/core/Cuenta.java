@@ -1,19 +1,17 @@
 package com.spendo.core;
 
-
-
-import java.util.List;
-import java.util.ArrayList;
+import java.util.*;
 
 import com.spendo.core.exceptions.MontoInvalidoException;
-import com.spendo.core.exceptions.SaldoInsuficienteException;
+import com.spendo.core.exceptions.OperacionInvalidaException;
+import com.spendo.core.exceptions.RegistroDuplicadoException;
 
 public class Cuenta {
     //Atributos
     private String nombre;
     private double balance;
-    //Lista de objetos tipo registro para contabilizar registros de cada cuenta
-    private List<Registro> registros;
+
+    private Map<UUID, Registro> registros;
 
     /**
      * Constructor con balance en parametros
@@ -23,8 +21,7 @@ public class Cuenta {
     public Cuenta(String nombre, double balance) {
         this.nombre = nombre;
         this.balance = balance;
-        //se inicializa una lista para cada objeto Cuenta
-        this.registros = new ArrayList<>();
+        this.registros = new LinkedHashMap<>();
     }
 
     /**
@@ -66,9 +63,27 @@ public class Cuenta {
     /**
      * Agrega un nuevo registros a la lista de registros del objeto
      * @param registro : Nuevo registro
+     * @throws RegistroDuplicadoException si el registro es el mismo
      */
     public void addRegistro (Registro registro){
-        this.registros.add(registro);
+        if (registro == null) {
+            throw new OperacionInvalidaException("Registro invalido");
+        }
+
+        if (this.registros.containsKey(registro.getId())) {
+            throw new RegistroDuplicadoException("Registro duplicado");
+        }
+
+
+        this.registros.put(registro.getId(), registro);
+    }
+
+    /**
+     * Remueve un registro por su id
+     * @param id identificador del registro a remover
+     */
+    public void removeRegistro(UUID id) {
+        this.registros.remove(id);
     }
 
     /**
@@ -98,10 +113,10 @@ public class Cuenta {
 
     /**
      *  Getter para la lista de registros
-     * @return  la lista de registros en tipo List<Registro>
+     * @return  una lista de registros en tipo List<Registro>
      */
     public List<Registro> getRegistros() {
-        return this.registros;
+        return new ArrayList<>(this.registros.values());
     }
 
 }
